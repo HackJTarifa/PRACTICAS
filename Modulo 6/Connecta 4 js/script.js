@@ -3,7 +3,7 @@ function connecta4() {
     do{
         gameInit();    
     }while(playAgain())
-    console.log("EL JUEGO CONECTA 4 HA TERMINADO ");
+    console.info("EL JUEGO CONECTA 4 HA TERMINADO ");
     
     function gameInit() {
         let game = {
@@ -20,20 +20,15 @@ function connecta4() {
         
         const getTypesPlayers = function(){
             const playerTypes = ["JUGADOR", "MAQUINA"];
-            let respuesta;
+            let answer;
             let isAnswerdValid;
             do{
-                respuesta = parseInt(prompt('JUGADOR VS JUGADOR ELIGE :1 \nJUGADOR VS MAQUINA ELIGE: 2 \nMAQUINA VS MAQUINA: ELIGE : 3'));
-                isAnswerdValid = respuesta === 1 || respuesta === 2 || respuesta === 3;
+                answer = parseInt(prompt('JUGADOR VS JUGADOR ELIGE :1 \nJUGADOR VS MAQUINA ELIGE: 2 \nMAQUINA VS MAQUINA: ELIGE : 3'));
+                isAnswerdValid = answer === 1 || answer === 2 || answer === 3;
             }while(!isAnswerdValid)
 
-            if(respuesta === 1){
-                return [playerTypes[0], playerTypes[0]];
-            } else if(respuesta === 2){
-                return [playerTypes[0], playerTypes[1]];
-            }else{
-                return [playerTypes[1], playerTypes[1]];
-            }
+            const modes =[[playerTypes[0], playerTypes[0]], [playerTypes[0], playerTypes[1]], [playerTypes[1], playerTypes[1]]];       
+            return modes[answer - 1];
         }
         
         let playerMode = getTypesPlayers();
@@ -79,21 +74,16 @@ function connecta4() {
         printMessageEndGame(game.win, game.player);
 
         function gameEnd(win, movRestantes) {
-            if(win){
-                return true
-            }else if(movRestantes <= 0){
-                return true;
-            } 
-            return false;
+            return win || movRestantes <= 0;
         }
 
-        function playerWin(tablero, tokenState, FILES, COLUMNS){
-            console.log(tokenState);        
+        function playerWin(board, tokenState, FILES, COLUMNS){
+            console.info(tokenState);        
 
             let cuantroEnRaya = false;
             for(let idFil = 0; idFil < FILES ; idFil++){
                 for(let idCol = 0; idCol < COLUMNS; idCol++){
-                    cuantroEnRaya = checkPosition(tablero, idCol, idFil, tokenState);
+                    cuantroEnRaya = checkPosition(board, idCol, idFil, tokenState);
                     if (cuantroEnRaya){
                         return true;
                     }
@@ -101,21 +91,21 @@ function connecta4() {
             }
             return false;
 
-            function checkPosition(tablero, idCol, idFil, tokenState) {
+            function checkPosition(tablero, idCol, idRow, token) {
                 const CONECTA_SIZE = 4;
                 if(CONECTA_SIZE + idCol < 7){                     
-                    if (tablero[idCol][idFil] == tokenState && tablero[idCol + 1][idFil] == tokenState && tablero[idCol + 2][idFil] == tokenState && tablero[idCol + 3][idFil] == tokenState){
+                    if (tablero[idCol][idRow] == token && tablero[idCol + 1][idRow] == token && tablero[idCol + 2][idRow] == token && tablero[idCol + 3][idRow] == token){
                         return true;
                     }
                 }                 
-                if(CONECTA_SIZE + idFil < 6){
-                    if(tablero[idCol][idFil] == tokenState && tablero[idCol][idFil + 1] == tokenState && tablero[idCol][idFil + 2] == tokenState && tablero[idCol][idFil + 3] == tokenState){
+                if(CONECTA_SIZE + idRow < 6){
+                    if(tablero[idCol][idRow] == token && tablero[idCol][idRow + 1] == token && tablero[idCol][idRow + 2] == token && tablero[idCol][idRow + 3] == token){
                         return true;
                     }
                 }
-                if(CONECTA_SIZE + idCol < 7 && CONECTA_SIZE + idFil < 6){
-                    if(tablero[idCol][idFil] == tokenState && tablero[idCol + 1][idFil + 1] == tokenState && tablero[idCol + 2][idFil + 2] == tokenState && tablero[idCol + 3][idFil + 3] == tokenState ||
-                        tablero[idCol][idFil + 3] == tokenState && tablero[idCol + 1][idFil + 2] == tokenState && tablero[idCol + 2][idFil + 1] == tokenState && tablero[idCol + 3][idFil] == tokenState) {
+                if(CONECTA_SIZE + idCol < 7 && CONECTA_SIZE + idRow < 6){
+                    if(tablero[idCol][idRow] == token && tablero[idCol + 1][idRow + 1] == token && tablero[idCol + 2][idRow + 2] == token && tablero[idCol + 3][idRow + 3] == token ||
+                        tablero[idCol][idRow + 3] == token && tablero[idCol + 1][idRow + 2] == token && tablero[idCol + 2][idRow + 1] == token && tablero[idCol + 3][idRow] == token) {
                         return true;
                     }
                 }
@@ -123,33 +113,33 @@ function connecta4() {
             }
         }
 
-        function isPosititionValid(tablero, column){    
+        function isPosititionValid(board, column){    
             for(let i = 0; i < 6; i++){ 
-                if(tablero[column][i] == "0"){
+                if(board[column][i] == "0"){
                     return true;
                 }
             }
-            console.log("LA COLUMNA ELEGIDA NO ES VALIDA, ESTA LLENA.")
+            console.info("LA COLUMNA ELEGIDA NO ES VALIDA, ESTA LLENA.")
             return false;
         }
 
-        function printTablero(tablero){
-            console.log(tablero[0]);
-            console.log(tablero[1]);
-            console.log(tablero[2]);
-            console.log(tablero[3]);
-            console.log(tablero[4]);
-            console.log(tablero[5]);
-            console.log(tablero[6]);
-            console.log(" ");
+        function printTablero(board){
+            console.info(board[0]);
+            console.info(board[1]);
+            console.info(board[2]);
+            console.info(board[3]);
+            console.info(board[4]);
+            console.info(board[5]);
+            console.info(board[6]);
+            console.info(" ");
         }
 
-        function updateTablero(tablero, column, tokenstate){
+        function updateTablero(board, column, tokenstate){
             let index = 0;
-            while(tablero[column][index] == "RED" || tablero[column][index] == "YELLOW"){
+            while(board[column][index] == "RED" || board[column][index] == "YELLOW"){
                 index += 1;
             }    
-            tablero[column][index] = tokenstate;
+            board[column][index] = tokenstate;
         }
 
         function inicializeTablero(FILES, COLUMNS){    
@@ -169,28 +159,25 @@ function connecta4() {
         function printMessageEndGame(win, player){
             const PLAYERS = ["PLAYER 1", "PLAYER 2"];
             if (win){
-                console.log("ENORABUENA EL JUGADOR: " + PLAYERS[player] + " HA GANADO");
+                console.info("ENORABUENA EL JUGADOR: " + PLAYERS[player] + " HA GANADO");
             }else{
-                console.log("NO HAY MAS MOVIMIENTOS POSIBLES, EMPATE");
+                console.info("NO HAY MAS MOVIMIENTOS POSIBLES, EMPATE");
             }
         }
     }
            
     function playAgain(){
-        let respuesta;
+        let answer;
         let isAnswerdValid;
         do{
-            respuesta = prompt('QUIERES JUGAR OTRA PARTIDA: ');
-            isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
+            answer = prompt('QUIERES JUGAR OTRA PARTIDA(SI/NO): ');
+            isAnswerdValid = answer === 'SI' || answer === 'NO';
             if (!isAnswerdValid){
-                console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
+                console.info("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
     
-        if (respuesta === 'SI'){
-            return true;
-        }
-        return false; 
+        return (answer === 'SI');
     }
 }
 

@@ -129,22 +129,26 @@ function mastermind(){
         }
 
         function checkCombinacion(InputCombination, combinacionGanadora){
-            let supportCombination = ["VACIO", "VACIO", "VACIO", "VACIO", "VACIO"];
+            let supportCombination = [];
             for(let i = 0; i < InputCombination.length; i++){
                 if(InputCombination[i] === combinacionGanadora[i]){
                     supportCombination[i] = "NEGRO";
+                }else if(existColor(InputCombination[i])){
+                    supportCombination[i] = "BLANCO";                    
                 }else{
-                    let encontrado = false;
-                    for(let j = 0; j < combinacionGanadora.length && !encontrado; j++){
-                        if(InputCombination[i] === combinacionGanadora[j]){
-                            supportCombination[i] = "BLANCO";
-                            encontrado = true;
-                            break;
-                        }
-                    }
+                    supportCombination[i] = "VACIO";
                 }
             }
             return supportCombination;
+
+            function existColor(colorCheck, combinacionGanadora) {
+                for (let j = 0; j < combinacionGanadora.length; j++) {
+                    if (colorCheck === combinacionGanadora[j]) {
+                        return true;                        
+                    }
+                }
+                return false;
+            }
         }
 
         function getWinCombination(coloresValidos){
@@ -162,27 +166,23 @@ function mastermind(){
                 }
             }while(winCombination.length < 5)
 
-            console.log(winCombination[0] + " " + winCombination[1] + " " + winCombination[2] + " " + winCombination[3] + " " + winCombination[4]);
+            console.info(winCombination[0] + " " + winCombination[1] + " " + winCombination[2] + " " + winCombination[3] + " " + winCombination[4]);
             return winCombination;
         }
 
     }
 
     function playAgain(){
-        let respuesta;
+        let answer;
         let isAnswerdValid;
         do{
-            respuesta = prompt('Quieres jugar otra partida: ');
-            isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
+            answer = prompt('Quieres jugar otra partida(SI/NO): ');
+            isAnswerdValid = answer === 'SI' || answer === 'NO';
             if (!isAnswerdValid){
-                console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
+                console.info("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
-
-        if (respuesta === 'SI'){
-            return true;
-        }
-        return false; 
+        return (answer === 'SI');
     }
 }
 mastermind();

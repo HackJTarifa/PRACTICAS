@@ -8,28 +8,25 @@ function ticTacToe() {
     // -------------- END PROGRAMA ---------------------
     
     function playAgain(){
-        let respuesta;
+        let answer;
         let isAnswerdValid;
         do{
-            respuesta = prompt('Quieres jugar otra partida: ');
-            isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
+            answer = prompt('Quieres jugar otra partida(SI/NO): ');
+            isAnswerdValid = answer === 'SI' || answer === 'NO';
             if (!isAnswerdValid){
                 console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
 
-        if (respuesta === 'SI'){
-            return true;
-        }
-        return false; 
+        return answer === 'SI'; 
     }
 
     function gameInit() {
         let game = {
-            MODES: [["JUGADOR", "JUGADOR"],  ["JUGADOR", "MAQUINA"], ["MAQUINA", "MAQUINA"]],
+            MODES: [["JUGADOR", "JUGADOR"], ["JUGADOR", "MAQUINA"], ["MAQUINA", "MAQUINA"]],
             TOKENSTATE: ['X', 'Y'],
-            TOKENSTATEEMPY: "0",
-            NPLAYERS: 2,
+            TOKEN_STATE_EMPY: "0",
+            N_PLAYERS: 2,
             player: 0,
             mov_restantes: 9,
             win: false,
@@ -39,13 +36,13 @@ function ticTacToe() {
         const playerModel = getPlayerModel();
         playerMode = game.MODES[playerModel - 1]; //compensamos 1 como la poscion 0 del array
 
-        let tablero = inicializeTablero(3, 3, game.TOKENSTATEEMPY);
+        let board = initializeBoard(3, 3, game.TOKEN_STATE_EMPY);
             
-        console.log(tablero);    
+        console.log(board);    
         do {
-            game.win = tirada(tablero, game.player, playerMode[game.player]);
+            game.win = tirada(board, game.player, playerMode[game.player]);
             if (!game.win) {
-                game.player = (game.player + 1) % game.NPLAYERS;
+                game.player = (game.player + 1) % game.N_PLAYERS;
                 game.mov_restantes -= 1;
             }
         } while (!gameEnd(game.win, game.mov_restantes));
@@ -68,22 +65,22 @@ function ticTacToe() {
          * @param {number} columns 
          * @returns {Array} 
          */
-        function inicializeTablero(files, columns, tokenEstateEmpy){
-            let tablero = new Array(files);
-            for(let i = 0; i < tablero.length; i++){
-                tablero[i] = new Array(columns);
+        function initializeBoard(files, columns, tokenEstateEmpy){
+            let board = new Array(files);
+            for(let i = 0; i < board.length; i++){
+                board[i] = new Array(columns);
             }
 
-            for(let i = 0; i < tablero.length; i++){             
-                for (let j = 0; j < tablero[i].length; j++){
-                    tablero[i][j] = tokenEstateEmpy;
+            for(let i = 0; i < board.length; i++){             
+                for (let j = 0; j < board[i].length; j++){
+                    board[i][j] = tokenEstateEmpy;
                 }
             } 
 
-            console.log(tablero[0]);
-            console.log(tablero[1]);
-            console.log(tablero[2]);
-            return tablero;
+            console.info(board[0]);
+            console.info(board[1]);
+            console.info(board[2]);
+            return board;
         }
 
         /**
@@ -93,12 +90,7 @@ function ticTacToe() {
          * @returns 
          */
         function gameEnd(winPlayer, mov_restantes){
-            if(winPlayer){
-                return true;
-            }else if(mov_restantes <= 0){
-                return true;
-            }
-            return false;
+            return winPlayer || mov_restantes <= 0;
         }
 
         /**
@@ -116,33 +108,30 @@ function ticTacToe() {
         }
 
         /** 
-         * @param {Array[string][string]} tablero 
+         * @param {Array[string][string]} board 
          * @param {number} player 
          * @param {Array[string]} playerMode // Indica si la tirada la realiza un jugador o la maquina
          * @returns 
          */
-        function tirada(tablero, player, playerMode) {
+        function tirada(board, player, playerMode) {
             const TOKENSTATE = ['X', 'Y'];
-            let tipoPlayer;
+            let typePlayer;
             console.log("ESTA JUGANDO : " + playerMode);
             if(playerMode === 'JUGADOR'){
-                tipoPlayer = function getFileColumn(tablero) {
+                typePlayer = function getFileColumn(board) {
                                 let file, column;
                                 do {
                                     file = getPosition("FILE");
                                     column = getPosition("COLUMN");
-                                } while (!isPosititionValid(tablero, file, column));
+                                } while (!isPosititionValid(board, file, column));
                                 console.log("SE HA ELEGIDO LA FILA: " + file);
                                 console.log("SE HA ELEGIDO LA COLUMNA: " + column);
                                 return [file, column];
                 
                                 function isPosititionValid(tablero, file, column){
                                     console.log(tablero[file][column]);
-                                    if(tablero[file][column] === "0"){
-                                        return true;
-                                    }
-                                    return false;
-                                }                
+                                    return (tablero[file][column] === "0");
+                                }                                                
                 
                                 function getPosition(fileOColumn){
                                     let fileColumn;
@@ -164,13 +153,13 @@ function ticTacToe() {
                                 }
                             }              
             }else{
-                /** @param {array[string][string]} tablero */
-                tipoPlayer = function getRandomPosition(tablero){
+                /** @param {array[string][string]} board */
+                typePlayer = function getRandomPosition(board){
                                 let validFile = [];
                                 let validColumn = [];
-                                for(let i = 0; i < tablero.length; i++){             
-                                    for (let j = 0; j < tablero[i].length; j++){
-                                        if (tablero[i][j] == "0"){
+                                for(let i = 0; i < board.length; i++){             
+                                    for (let j = 0; j < board[i].length; j++){
+                                        if (board[i][j] == "0"){
                                             validFile.push(i); 
                                             validColumn.push(j);  
                                         }
@@ -184,43 +173,43 @@ function ticTacToe() {
             }
 
             /** @param {funtion} tipoPlayer */
-            let getTirada = function (tipoPlayer, tablero){
-                                return tipoPlayer(tablero);
+            let getTirada = function (tipoPlayer, board){
+                                return tipoPlayer(board);
                             }
 
-            let fileColumn = getTirada(tipoPlayer, tablero);
+            let fileColumn = getTirada(typePlayer, board);
 
-            tablero[fileColumn[0]][fileColumn[1]] = TOKENSTATE[player];
-            printTablero(tablero);
+            board[fileColumn[0]][fileColumn[1]] = TOKENSTATE[player];
+            printTablero(board);
     
-            return win = playerWin(tablero, TOKENSTATE[player]);
+            return win = playerWin(board, TOKENSTATE[player]);
 
             /**             
-             * @param {arry [string][string]} tablero 
-             * @param {array[string]} tokenState 
+             * @param {arry [string][string]} board 
+             * @param {array[string]} token 
              * @returns 
              */
-            function playerWin(tablero, tokenState){
-                console.log("COMPRUEVA SI EL GANADOR ES: " + tokenState);
+            function playerWin(board, token){
+                console.log("COMPRUEVA SI EL GANADOR ES: " + token);
                 for(let i = 0; i < 3; i++){
-                    if(tablero[i][0] ===  tokenState && tablero[i][1] === tokenState && tablero[i][2] === tokenState){
-                        console.log("ganador file [" + i + "][0]-["+ i +"][1]-["+ i +"][2]: " + tablero[i][0] + " " + tablero[i][1] + " " + tablero[i][2]);
+                    if(board[i][0] ===  token && board[i][1] === token && board[i][2] === token){
+                        console.log("ganador file [" + i + "][0]-["+ i +"][1]-["+ i +"][2]: " + board[i][0] + " " + board[i][1] + " " + board[i][2]);
                         return true;
                     }
-                    if(tablero[0][i] ===  tokenState && tablero[1][i] === tokenState && tablero[2][i] === tokenState){
-                        console.log("ganador column [0][" + i + "]-[1][" + i + "]-[2]["+ i +"]: " + tablero[0][i] + " " + tablero[1][i] + " " + tablero[2][i]);
+                    if(board[0][i] ===  token && board[1][i] === token && board[2][i] === token){
+                        console.log("ganador column [0][" + i + "]-[1][" + i + "]-[2]["+ i +"]: " + board[0][i] + " " + board[1][i] + " " + board[2][i]);
                         return true;
                     }           
                 }
-                if( tablero[0][0] === tokenState && tablero[1][1] === tokenState && tablero[2][2] === tokenState){
-                    console.log("granador [0][0]-[1][1]-[2][2]: " + tablero[0][0] + " " + tablero[1][1] + " " + tablero[2][2]);
+                if( board[0][0] === token && board[1][1] === token && board[2][2] === token){
+                    console.log("granador [0][0]-[1][1]-[2][2]: " + board[0][0] + " " + board[1][1] + " " + board[2][2]);
                     return true;
                 }
-                if( tablero[2][0] === tokenState && tablero[1][1] === tokenState && tablero[0][2] === tokenState){
-                    console.log("ganador [2][0]-[1][1]-[0][2]: " + tablero[2][0] + " " + tablero[1][1] + " " + tablero[0][2]);
+                if( board[2][0] === token && board[1][1] === token && board[0][2] === token){
+                    console.log("ganador [2][0]-[1][1]-[0][2]: " + board[2][0] + " " + board[1][1] + " " + board[0][2]);
                     return true;
                 }
-                console.log("EL JUGADOR: " + tokenState + " NO HA GANADO");
+                console.log("EL JUGADOR: " + token + " NO HA GANADO");
                 return false;
             }
              

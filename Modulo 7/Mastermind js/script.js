@@ -2,7 +2,7 @@
 function createBoard(){
     let board = {
         validColors: ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"],
-        winCombination: createWinCombination(),
+        winCombination: [],
         createWinCombination: function(){
             let winCombination = [];
             do{
@@ -19,7 +19,7 @@ function createBoard(){
             }while(winCombination.length < 5)
     
             console.log(winCombination[0] + " " + winCombination[1] + " " + winCombination[2] + " " + winCombination[3] + " " + winCombination[4]);
-            return winCombination;
+            board.winCombination = winCombination;
         },
         checkCombinacionHits: function(InputCombination){
             let supportCombination = ["VACIO", "VACIO", "VACIO", "VACIO", "VACIO"];
@@ -38,11 +38,10 @@ function createBoard(){
             }
             return supportCombination;
         },
-        win: function(InputCombination){
-            const aciertos = board.checkCombinacionHits(InputCombination);
+        win: function(hits){
             let nColoresAcertados = 0;
-            for(let i = 0; i < aciertos.length; i++){
-                if(aciertos[i] === "BLANCO"){
+            for(let i = 0; i < hits.length; i++){
+                if(hits[i] === "BLANCO"){
                     nColoresAcertados += 1;
                 }
             }
@@ -60,7 +59,7 @@ function createGame(){
         mov_restantes: 15,
         validColors: ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"],
         combinacionesPropuestas: [],
-        aciertos: [],
+        hits: [],
         win: false,
         inputCombination: NaN,
         board: createBoard(),
@@ -68,13 +67,12 @@ function createGame(){
         init: function(){
             // game.combinacionGanadora = getWinCombination();
             game.board.createWinCombination();
-    
             //const combinacionIngresada;
             do {
                 const combinacionIngresada = getCombinacion();
-                game.aciertos = game.board.checkCombinacionHits(combinacionIngresada, game.board.winCombination);
-                game.win = game.board.win(game.aciertos);
-                updateHistorial(combinacionIngresada, game.aciertos);
+                game.hits = game.board.checkCombinacionHits(combinacionIngresada, game.board.winCombination);
+                game.win = game.board.win(game.hits);
+                updateHistorial(combinacionIngresada, game.hits);
         
                 if (!game.win) {
                     game.mov_restantes -= 1;
@@ -87,37 +85,37 @@ function createGame(){
     return game;
 
     function getCombinacion(){
-        let combinacion_valida;
+        let vaildCombination;
                 
         do{                     
-            combinacion_valida = false;
+            vaildCombination = false;
             let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
             game.inputCombination = entrada.split(' ');
 
-            let nColoresValidos = 0;
+            let nColoresValid = 0;
             for(let i = 0; i < game.inputCombination.length; i++){
                 let colorValido = false;
                 for (let j = 0; j < game.validColors.length && !colorValido ; j++){
-                    if(this.inputCombination[i] === this.validColors[j]){
+                    if(game.inputCombination[i] === game.validColors[j]){
                         colorValido = true;
                     }
                 }
                 if(colorValido){
-                    nColoresValidos += 1;
+                    nColoresValid += 1;
                 }
             }
 
-            const N_COLORS = 5;
-            if(nColoresValidos == N_COLORS){
-                combinacion_valida = true;
+            const nColors = 5;
+            if(nColoresValid == nColors){
+                vaildCombination = true;
             } 
-        }while(!combinacion_valida)
-        return this.inputCombination;
+        }while(!vaildCombination)
+        return game.inputCombination;
     }
 
     function updateHistorial(InputCombination, aciertos){
         game.combinacionesPropuestas.push(InputCombination);
-        game.aciertos.push(aciertos)
+        game.hits.push(aciertos)
         console.log(InputCombination + " -- " + aciertos );
     }
 
@@ -147,7 +145,7 @@ function createApp(){
         let aswerd;
         let isAnswerdValid;
         do{
-            aswerd = prompt('Quieres jugar otra partida: ');
+            aswerd = prompt('Quieres jugar otra partida (SI/NO): ');
             isAnswerdValid = aswerd === 'SI' || aswerd === 'NO';
             if (!isAnswerdValid){
                 console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
@@ -158,8 +156,5 @@ function createApp(){
     }        
 }
 
-let app = createApp()
-app.start()
-
-
-// TODO: Revisar que funciona el codigo.
+let app = createApp();
+app.start();

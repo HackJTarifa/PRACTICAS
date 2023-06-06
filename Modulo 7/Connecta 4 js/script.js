@@ -13,9 +13,7 @@ function createdBoard(files, columns){
         return board;
     }
     
-    fnBoard = {
-
-        
+    fnBoard = {        
         files: files,
         columns: columns,
         board: inicializeBoard(files, columns),
@@ -183,5 +181,5 @@ function createApp(){
     }
 }
 
-let app = createApp()
+let app = createApp();
 app.start()
