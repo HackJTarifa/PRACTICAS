@@ -10,50 +10,31 @@ function mastermind(){
         const validColors = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"];
         const winCombination = getWinCombination(validColors);
         
-        const playerType = ["JUGADOR", "MAQUINA"];
-        const functionPlayerrType = {"JUGADOR": function getCombinationPlayer(coloresValidos){
-                                                    let InputCombination;
-                                            
-                                                    do{                     
-                                                        combinacion_valida = false;
-                                                        let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
-                                                        InputCombination = entrada.split(' ');
+        let playerMode = getPlayerMode(); 
+        
+        let combinationsHistory = []; // listado de combinaciones ingresada
+        let hits = [];
+        let win;
 
-                                                        let nColoresValidos = 0;
-                                                        for(let i = 0; i < InputCombination.length; i++){
-                                                            let colorValido = false;
-                                                            for (let j = 0; j < coloresValidos.length && !colorValido ; j++){
-                                                                if(InputCombination[i] === coloresValidos[j]){
-                                                                    colorValido = true;
-                                                                }
-                                                            }
-                                                            if(colorValido){
-                                                                nColoresValidos += 1;
-                                                            }
-                                                        }
+        do {
+            const inputCombination = getCombination(validColors, playerMode);
+            hits = checkCombinacion(inputCombination, winCombination);
+            win = playerWin(hits);
+            updateHistorial(combinationsHistory, inputCombination, hits);
 
-                                                        console.log(InputCombination);
-                                                        console.log(winCombination);
-                                                        const N_COLORS = 5;
-                                                        if(nColoresValidos == N_COLORS){
-                                                            combinacion_valida = true;
-                                                        } 
-                                                    }while(!combinacion_valida)
-                                                    return InputCombination;
-                                                } 
-                            ,"MAQUINA": function getRandomTirada(validColors){
-                                            let colorsRandomTirada = [];
-                                            const N_COLORS = 5;
-                                            for(let i = 0; i < N_COLORS; i++){
-                                                const validColorsRandomIndex = Math.floor(Math.random() * validColors.length);
-                                                colorsRandomTirada.push(validColors[validColorsRandomIndex]);
-                            
-                                            }
-                                            return colorsRandomTirada;
-                                        }
-                                    };
-
-        const playerMode = function getPlayerMode(playerType){
+            if (!win) {
+                mov_restantes -= 1;
+            }
+        } while (!gameEnd(win, mov_restantes)); // nor, si las dos son falsas repite bucle
+        printMessageEndGame(win);
+        
+        /**
+         * Pregunta si quiere que juege el jugaodor o la máquina.
+         * @param {Array[string]} playerType //  MAQUINA vs JUGADOR 
+         * @returns 
+         */
+        function getPlayerMode(){
+            const playerTypes = ["JUGADOR", "MAQUINA"];
             let validPlayerMode = false;
             let entrada;
             do{                
@@ -62,35 +43,80 @@ function mastermind(){
                     validPlayerMode = !validPlayerMode;
                 }
             }while(!validPlayerMode)
-
-            return playerType[entrada - 1];
+            return playerTypes[entrada - 1];
         }
 
-        let getCombination = functionPlayerrType[playerMode(playerType)]; 
-        
-        //negro si es igual, blanco si el color esta en la tabla.
-        let combinationsHistory = []; // listado de combinaciones ingresada
-        let hits = [];
-        let win;
-        //const combinacionIngresada;
-        do {
-            const InputCombination = getCombination(validColors);
-            hits = checkCombinacion(InputCombination, winCombination);
-            win = playerWin(hits);
-            updateHistorial(combinationsHistory, InputCombination, hits);
+        /**
+         * 
+         * @param {*} validColors 
+         * @param {*} playerMode 
+         * @param {*} playerType 
+         * @returns 
+         */
+        function getCombination(validColors, playerMode){
+            const functionPlayerrType = {"JUGADOR": function getCombinationPlayer(validColors){
+                                                        let InputCombination;
+                                                
+                                                        do{                     
+                                                            combinacion_valida = false;
+                                                            let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
+                                                            InputCombination = entrada.split(' ');
 
-            if (!win) {
-                mov_restantes -= 1;
-            }
-        } while (!gameEnd(win, mov_restantes)); // nor, si las dos son falsas repite bucle
-        printMessageEndGame(win);
+                                                            let nColoresValidos = 0;
+                                                            for(let i = 0; i < InputCombination.length; i++){
+                                                                let colorValido = false;
+                                                                for (let j = 0; j < validColors.length && !colorValido ; j++){
+                                                                    if(InputCombination[i] === validColors[j]){
+                                                                        colorValido = true;
+                                                                    }
+                                                                }
+                                                                if(colorValido){
+                                                                    nColoresValidos += 1;
+                                                                }
+                                                            }
 
+                                                            console.log(InputCombination);
+                                                            console.log(winCombination);
+                                                            const N_COLORS = 5;
+                                                            if(nColoresValidos == N_COLORS){
+                                                                combinacion_valida = true;
+                                                            } 
+                                                        }while(!combinacion_valida)
+                                                        return InputCombination;
+                                                    } 
+                                        ,"MAQUINA": function getRandomTirada(validColors){
+                                                            let colorsRandomTirada = [];
+                                                            const N_COLORS = 5;
+                                                            for(let i = 0; i < N_COLORS; i++){
+                                                                const validColorsRandomIndex = Math.floor(Math.random() * validColors.length);
+                                                                colorsRandomTirada.push(validColors[validColorsRandomIndex]);
+
+                                                            }
+                                                            return colorsRandomTirada;
+                                                        }
+                                                    };        
+
+            let getCombination = functionPlayerrType[playerMode]; 
+            return getCombination(validColors);
+        }
+
+        /**
+         * 
+         * @param {*} combinationsHistory 
+         * @param {*} InputCombination 
+         * @param {*} aciertos 
+         */
         function updateHistorial(combinationsHistory ,InputCombination, aciertos){
             combinationsHistory.push(InputCombination);
             hits.push(aciertos)
             console.log(InputCombination + " -- " + aciertos );
         }
 
+
+        /**
+         * 
+         * @param {Boolean} playerWin 
+         */
         function printMessageEndGame(playerWin){
             if (playerWin){
                 console.log("ENORABUENA EL JUGAODR HA GANADO");
@@ -99,6 +125,12 @@ function mastermind(){
             }  
         }
 
+        /**
+         * 
+         * @param {Boolean} win 
+         * @param {number} mov_restantes 
+         * @returns 
+         */
         function gameEnd(win, mov_restantes){
             if(win){
                 return true;
@@ -108,6 +140,11 @@ function mastermind(){
             return false;
         }
 
+        /**
+         * 
+         * @param {Array[string]} aciertos 
+         * @returns 
+         */
         function playerWin(aciertos){
             let nColoresAcertados = 0;
             for(let i = 0; i < aciertos.length; i++){
@@ -121,6 +158,12 @@ function mastermind(){
             return false;
         }
 
+        /**
+         * negro si es igual, blanco si el color esta en la tabla.
+         * @param {*} InputCombination 
+         * @param {*} combinacionGanadora 
+         * @returns 
+         */
         function checkCombinacion(InputCombination, combinacionGanadora){
             let supportCombination = ["VACIO", "VACIO", "VACIO", "VACIO", "VACIO"];
             for(let i = 0; i < InputCombination.length; i++){
@@ -139,6 +182,11 @@ function mastermind(){
             return supportCombination;
         }
 
+        /**
+         * 
+         * @param {Array[String]} coloresValidos 
+         * @returns 
+         */
         function getWinCombination(coloresValidos){
             let winCombination = [];
             do{
@@ -159,6 +207,10 @@ function mastermind(){
         }
     }
 
+    /**
+     * 
+     * @returns 
+     */
     function playAgain(){
         let respuesta;
         let isAnswerdValid;

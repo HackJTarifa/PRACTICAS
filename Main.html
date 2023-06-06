@@ -19,9 +19,11 @@
                     MODULO 1, PROGRAMACION SECUENCIAL 
                 </h3>
                 <div class="texto_normal">
-                    
-                    Este código esta programado sin el uso de funciona, solamente utilizando bucles y condionales.
-                    
+                    <ul>
+                        <li>
+                            Este código esta programado sin el uso de funciones, solamente utilizando bucles y condionales.
+                        </li>                    
+                    </ul>
                 </div>                
                     <a href="Modulo 1/Mastermind.html"><li> Mastermind</li></a>
                     <a href="Modulo 1/TicTacToe.html"><li> Tic Tac Toe</li></a>
@@ -32,101 +34,16 @@
                 <h3>
                     MODULO 2, PROGRAMACION SECUENCIAL CON FUNCIONES 
                 </h3>
-                <ul>
-                    <h4>
-                        CAMBIOS MASTERMIND
-                    </h4>
-                    <li>
-                        Añadido <b>updateHistorial()</b> se encarga de actualiza el historial de tiradas y aciertos 
-                    </li>
-                    <li>
-                        Añadido <b>printMessageEndGame()</b> se encarga de imprimir por pantalla el nombre del juegador ganandor.
-                    </li>
-                    <li>
-                        Añadido <b>gameEnd()</b> se encarga de comprovar si un jugador a ganado o ha llegado al limite de movimientos.
-                    </li>
-                    <li>
-                        Añadido <b>playerWin()</b> se encarga de comprovar si la combiancion introducida es igual a la ganadora. 
-                    </li>
-                    <li>
-                        Añadido <b>checkCombinacion()</b> se encarga de comparar la combinacion ingresada con la ganadora, devuelve una array con colores blancos o negros o vacio dependiendo de si aciertas, existe el color o ninguna de las dos.
-                    </li>
-                    <li>
-                        Añadido <b>getCombinacion()</b> se encarga de pedir al usuario una combinacion y testea si es valida.
-                    </li>
-                    <li>
-                        Añadido <b>getWinCombination()</b> se encarga de crear una combinacion aleatoria con los colores validos, como combinacion ganadora.
-                    </li>
-                    <li>
-                        Añadido <b>playAgain()</b> se encarga de preguntarle al usuario si quiere volver a jugar.
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS TIC TAC TOE
-                    </h4>
-                    <li>                        
-                        Añadido <b>printTablero()</b>, que se encarga de imprimir el tablero del tic tac toe.
-                    </li>
-                    <li>
-                        Añadido <b>playAgain()</b>, que se encarga de preguntar al jugador si quiere volver a jugar.
-                    </li>
-                    <li> 
-                        Añadido <b>printMessageEndGame()</b>, que se encarga de imprimir por pantalla que jugador es el ganador.
-                    </li>
-                    <li>
-                        Añadido <b>gameEnd()</b>, que se encarga de comprovar si el juego a terminado, hay ganador  o no hay mas movimientos posibles.
-                    </li>
-                    <li>
-                        Añadido <b>playerWin()</b>, que se encarga de comprovar si el jugador que hecho el movimiento ha ganado.
-                    </li>
-                    <li>
-                        Añadido <b>getFile()</b>, que se encarga de pedir al jugador que elija una fila, y se encarga de comprovar que el valor ingresado es valido.
-                    </li>
-                    <li>
-                        Añadido <b>getColumn()</b>, que se encarga de pedir al jugador que elija una columna, y se encarga de comprovar que el valor ingresado es valido.
-                    </li>
-                    <li>
-                        Añadido <b>isPositionValid()</b>, que se encarga de comprovar que la posicion donde se quiere ingresar el valor no esta ya ocupada.
-                    </li>
-                    <li>
-                        Añadido <b>inicializeTablero()</b>, que se encarga de crear una array con todas las posicion del tablero, y agrega un valor a cada posicición.
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS CONNECTA 4
-                    </h4>
-                    <li>
-                        Añadido <b>updateTablero()</b> se encarga de ingresar el TOKEN en una columna, se presupone que se ha comprovado antes que es una columna valida, comienza desde la posicion 0 hasta encontrar la primera posicion vacia valida.
-                    </li>
-                    <li>
-                        Añadido <b>isPosititionValid()</b> se encarga de comprovar si una posicion del tablero el valida.
-                    </li>  
-                    <li>
-                        Añadido <b>getColumn()</b> se encarga de perdirle al jugador una colonumna para ingresar el TOKEN, esta tiene que ser valido 1...7.
-                    </li>  
-                    <li>
-                        Añadido <b>printTablero()</b> se encarga de imprimir el tablero con sus valores.
-                    </li>  
-                    <li>
-                        Añadido <b>gameEnd()</b> se encarga de comprovar si el jugador a ganado o no hay mas movimientos posibles.
-                    </li>  
-                    <li>
-                        Añadido <b>playerWin()</b> se encarga de comprovar si el jugador ha ganado.
-                    </li>  
-                    <li>
-                        Añadido <b>printMessageEndGame()</b> se encarga de imprimir por pantalla el mensaje de fin de juego, o jugador ganador.
-                    </li>  
-                    <li>
-                        Añadido <b>playAgain()</b> se encarga de pregunatar a los usuarios su quieren volver a jugar.
-                    </li>  
-                    <li>
-                        Añadido <b>inicializeTablero()</b> se encarga de inicializar el tablero con el tamaño definido con todas las posiciones a 0
-                    </li>                     
-                </ul>
-                <div class="texto_normal">                    
-                    Este código modifcia el código inicial donde se han creado diferentes funciones para organizar el codigo de mejor manera.
+                
+                <div class="texto_normal">               
+                    <ul>
+                        <li>     
+                            Este código modifcia el código inicial donde se han creado diferentes funciones para organizar el codigo de mejor manera.
+                        </li>
+                        <li>     
+                            El bucle principal se ha reducido al minimo y se han añadido diferentes funciones que encapsulan parte de la funcionalidad
+                        </li>
+                    </ul>
                 </div>
                 <a href="Modulo 2/Mastermind.html"><li> Mastermind</li></a>
                 <a href="Modulo 2/TicTacToe.html"><li> Tic Tac Toe</li></a>
@@ -137,34 +54,19 @@
                 <h3>
                     MODULO 3, PROGRAMACION SECUENCIAL CON FUNCIONES, DONDE LAS FUNCIONES ESTAN CON EL MINIMO ALCANCE POSIBLE 
                 </h3>
-                <ul>
-                    <h4>
-                        CAMBIOS MASTERMIND
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS TIC TAC TOE
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS CONNECTA 4
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
+                
                 <div class="texto_normal">
-                    Este codigo es igual al codigo del módulo 2, la única diferencia radica en que las funciones se han cambiado de lugar para que tengan el minimo alcance necesario,
-                    de esta manera se organiza el codigo por proximidad, algunos programadores organizan las funciones en relacion a su permanencia a funciones mas generales, esta se 
-                    ubican en la parte superior de la funcion que la llama, o de la funciona con un nivel inferior de abstracción.
+                    <ul>
+                        <li>  
+                            Este codigo es igual al codigo del módulo 2, la única diferencia radica en que las funciones se han cambiado de lugar para que tengan el minimo alcance necesario,
+                            de esta manera se organiza el codigo por proximidad, algunos programadores organizan las funciones en relacion a su permanencia a funciones mas generales, esta se 
+                            ubican en la parte superior de la funcion que la llama, o de la funciona con un nivel inferior de abstracción.
+                        </li>
+                        <li>
+                            Se ha movido las diferentes funciones de tal manera que algunas de ellas se han introducido detro de otras para minimizar el alcande lo maximo
+                            posible para cada funcion dependiendo de sus necesidades.
+                        </li>
+                    </ul>
                 </div>
                 <a href="Modulo 3/Mastermind.html"><li> Mastermind</li></a>
                 <a href="Modulo 3/TicTacToe.html"><li> Tic Tac Toe</li></a>
@@ -175,36 +77,19 @@
                 <h3>
                     MODULO 4, PROGRAMACION SECUENCIAL, CON FUNCIONES DE ORDEN SUPERIOR
                 </h3>
-                <ul>
-                    <h4>
-                        CAMBIOS MASTERMIND
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS TIC TAC TOE
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS CONNECTA 4
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                <div class="texto_normal">
-                    <h4>
-                    Este codigo es igual al codigo del módulo 3, la diferncia radica en que se ha introducido que se pueda seleccionar como jugador a una persona o al ordenador,
-                    donde se han creado dos funciones una para adquirir los datos de la jugado, una por el jugador y otra por el ordenador, donde las funciones son injectadas, de esta manera 
-                    se elimina la necesidad de crear un listado de condicionales para cada situación.
-                    </h4>
+                <div class="texto_normal">      
+                    <ul>
+                        <li>
+                            Este codigo es igual al codigo del módulo 3, la diferncia radica en que se ha introducido que se pueda seleccionar como jugador a una persona o al ordenador,
+                            donde se han creado dos funciones una para adquirir los datos de la jugado, una por el jugador y otra por el ordenador.
+                        </li>
+                        <li>
+                            Las funciones son asignadas a diferentes variables y en vez de llamar a la función, se pasa por referencia a la variable 
+                            asignada y se llama a esta variable como la función.
+                            Esto permite llamar a la misma variable que dependiendo lo elegido apunta a una función o otra. 
+                        </li>
+                    </ul>              
+                    
                 </div>
                 <a href="Modulo 4/Mastermind.html"><li> Mastermind</li></a>
                 <a href="Modulo 4/TicTacToe.html"><li> Tic Tac Toe</li></a>
@@ -215,92 +100,142 @@
                 <h3>
                     MODULO 5, PROGRAMACION SECUENCIAL, CON FUNCIONES DE ORDEN SUPERIOR
                 </h3>
-                <ul>
-                    <h4>
-                        CAMBIOS MASTERMIND
-                    </h4>
-                    <li>
-                        Añadido diccionario <b>functionPlayerType()</b> donde se asocia un nombre a una funcion.                        
-                    </li>
-                    <li>
-                        Modificado <b>getCombinacionPlayer()</b> se modificado la posicion de la funcion, ahora esta dentro del diccionario y se accede a ella haciendo una llamada al dicionario.
-                    </li>
-                    <li>
-                        Modificado <b>getRandomTirada()</b> se ha modificado la posicióbn de la función, ahora esta dentro del diccinario y se accede a ella haciendo una llamada al diccionario.
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS TIC TAC TOE
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS CONNECTA 4
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                
                 <div class="texto_normal">
-                    <h4>
-                        Este codigo es igual al codigo del módulo 4, la diferncia radica en que se ha cambiado las funciones de orden superior, estas en esta modificación se declararan dentro
-                        de un diccionario y el codigo esta dentro del diccionario, cuando se llama al nombre de la funcion el diccionario devuelve la funcion declarada.
-                    </h4>
+                    <ul>
+                        <li>
+                            Las funciones estan declaradas en un diccionario.
+                        </li>
+                        <li>
+                            Se ha usado un diccionario para almacenar una referncia de una key a una funcion, se llama a la key que proporciona la función asociada, esto se hace
+                            para cada modificar el comportamiento desado, cada nobre tiene una funciion diferente con un comportamiento diferente.
+
+                            En el tic tac toe, se ha empujado el diccionario dentro de la función getTirada.
+                        </li>
+                    </ul>
                 </div>
                 <a href="Modulo 5/Mastermind.html"><li> Mastermind</li></a>
                 <a href="Modulo 5/TicTacToe.html"><li> Tic Tac Toe</li></a>
                 <a href="Modulo 5/Connecta4.html"><li> Connecta 4</li></a>
             </div>
             <div class="modulo">
+                <font color=red> <h2>EN CAMBIO</h2> </font>
                 <h3>
-                <div class="texto_normal">
-                    <h4>
-                        Este codigo cambia completamente el diseño y se opta por un diseño orientado a objetos, donde el uso de clases es la cualidad principal del código.
-                    </h4>
-                </div>
-                    MODULO 6, PROGRAMACION ORIENTADA A OBJETOS, PRIMERA APROXIMACIÓN
+                    MODULO 6, PROGRAMACION CON OBJETOS SIN FUNCIONES
                 </h3>
-                <ul>
-                    <h4>
-                        CAMBIOS MASTERMIND
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS TIC TAC TOE
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
-                <ul>
-                    <h4>
-                        CAMBIOS CONNECTA 4
-                    </h4>
-                    <li>
-                        .... <b></b>...
-                    </li>
-                </ul>
                 <div class="texto_normal">
-                    <h4>
-                        ................
-                    </h4>
+                    <ul>
+                        <li>
+                            Las clases no pueden tener funciones.
+                        </li>
+                        <li>
+                            Se han agregado clases pero con la restriccion de que las clases no pueden tener funcione, se utilizan las clase como contenedores de clases hererogeneos.
+                        </li>
+                    </ul>
                 </div>
                 <a href="Modulo 6/Mastermind.html"><li> Mastermind</li></a>
                 <a href="Modulo 6/TicTacToe.html"><li> Tic Tac Toe</li></a>
                 <a href="Modulo 6/Connecta4.html"><li> Connecta 4</li></a>
             </div>
-            <li>fotos</li>
-            <li>videos</li>
-            <li>contatos</li>
+            <div class="modulo">
+                <font color=Yellow> <h2>TERMINADO</h2> </font>
+                <h3>
+                    MODULO 7, PROGRAMACION ORIENTADA A OBJETOS, PRIMERA APROXIMACIÓN
+                </h3>    
+                <div class="texto_normal">
+                    <ul>
+                        <li>
+                            Este codigo cambia completamente el diseño y se opta por un diseño orientado a objetos, donde se utilizan clases si usar la palabra reservada new, la clase es devuelta por una funcion asociada a una variable que se devuelve.
+                        </li>
+                    </ul>                    
+                </div>
+                <a href="Modulo 7/Mastermind.html"><li> Mastermind</li></a>
+                <a href="Modulo 7/TicTacToe.html"><li> Tic Tac Toe</li></a>
+                <a href="Modulo 7/Connecta4.html"><li> Connecta 4</li></a>
+            </div>
+            <div class="modulo">
+                <font color=Yellow> <h2>TERMINADO</h2> </font>
+                <h3>
+                    MODULO 8, PROGRAMACION ORIENTADA A OBJETOS, SEGUNDA APROXIMACIÓN
+                </h3>    
+                <div class="texto_normal">
+                    <ul>
+                        <li>
+                            Este codigo es practicamente igual que el anterior, se sustituye la referenca a la variable que es devuelta por una return sin variable asociada, donde se sustituye la referencia a la varieabla por la palabra reservada this.
+                        </li>
+                    </ul>                    
+                </div>
+                <a href="Modulo 8/Mastermind.html"><li> Mastermind</li></a>
+                <a href="Modulo 8/TicTacToe.html"><li> Tic Tac Toe</li></a>
+                <a href="Modulo 8/Connecta4.html"><li> Connecta 4</li></a>
+            </div>
+            <div class="modulo">
+                <font color=Yellow> <h2>TERMINADO</h2> </font>
+                <h3>
+                    MODULO 9, PROGRAMACION ORIENTADA A OBJETOS, TERCERA APROXIMACION SE UTILIZAN CLOSURES
+                </h3>    
+                <div class="texto_normal">
+                    <ul>
+                        <li>
+                            Este codigo cambia la aproximación a las clases por una funció que mantiene los valores de funcion.
+                        </li>
+                    </ul>                    
+                </div>
+                <a href="Modulo 9/Mastermind.html"><li> Mastermind</li></a>
+                <a href="Modulo 9/TicTacToe.html"><li> Tic Tac Toe</li></a>
+                <a href="Modulo 9/Connecta4.html"><li> Connecta 4</li></a>
+            </div>
+            <div class="modulo">
+                <font color=Yellow> <h2>TERMINADO</h2> </font>
+                <h3>
+                    MODULO 10, PROGRAMACION ORIENTADA A OBJETOS, CUARTA APROXIMACIÓN, SE UTILIZA EL PATRÓN DE DISEÑO FACTORIA
+                </h3>    
+                <div class="texto_normal">
+                    <ul>
+                        <li>
+                            Este codigo cambia el diseño donde se utiliza una aproximación con el patrón de diseño FACTORIA, donde separa la funcionalidad de la aproximación a la clase en dos clases que una se encarga de proporcionar la funcionalidad privada, y la otra 
+                            de proporcionar la funcionalidad publica que es a la que tenemos acceso.
+                        </li>
+                    </ul>                    
+                </div>
+                <a href="Modulo 10/Mastermind.html"><li> Mastermind</li></a>
+                <a href="Modulo 10/TicTacToe.html"><li> Tic Tac Toe</li></a>
+                <a href="Modulo 10/Connecta4.html"><li> Connecta 4</li></a>
+            </div>
+            <div class="modulo">
+                <font color=Yellow> <h2>TERMINADO</h2> </font>
+                <h3>
+                    MODULO 11, PROGRAMACION ORIENTADA A OBJETOS, QUINTA APROXIMACIÓN, SE UTILIZAN CLASES CON NEW
+                </h3>    
+                <div class="texto_normal">
+                    <ul>
+                        <li>
+                            Este codigo cambia completamente el diseño y se opta por un diseño orientado a objetos, donde el uso de clases es la cualidad principal del código.
+                        </li>
+                    </ul>                    
+                </div>
+                <a href="Modulo 11/Mastermind.html"><li> Mastermind</li></a>
+                <a href="Modulo 11/TicTacToe.html"><li> Tic Tac Toe</li></a>
+                <a href="Modulo 11/Connecta4.html"><li> Connecta 4</li></a>
+            </div>
+            <div class="modulo">
+                <font color=yellow> <h2>en curso</h2> </font>
+                <h3>
+                    MODULO 12, PROGRAMACION ORIENTADA A OBJETOS, SEXTA APROXIMACIÓN, SE AGREGA FUNCIONES SUPERIORES.
+                </h3>    
+                <div class="texto_normal">
+                    <ul>
+                        <li>
+                            Este codigo se mantiene el diseño orientado a objetos, donde se agregan la funcionalidad de jugar maquina, y se usan funciones de
+                            orden superior para proporcionar la funcionalida.
+                        </li>
+                    </ul>                    
+                </div>
+                <a href="Modulo 12/Mastermind.html"><li> Mastermind</li></a>
+                <a href="Modulo 12/TicTacToe.html"><li> Tic Tac Toe</li></a>
+                <a href="Modulo 12/Connecta4.html"><li> Connecta 4</li></a>
+            </div>
+
+
         </ul>
     </nav>
     <section>
