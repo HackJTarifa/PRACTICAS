@@ -28,7 +28,7 @@ function createdBoard(files, columns){
                     return true;
                 }
             }
-            console.info("LA COLUMNA ELEGIDA NO ES VALIDA, ESTA LLENA.")
+            console.log("LA COLUMNA ELEGIDA NO ES VALIDA, ESTA LLENA.")
             return false;
         },
         update: function(column, tokenState){
@@ -78,7 +78,7 @@ function createGame(){
 
     function playerWin(object){
         let tokenState = object.tokenState[object.player];
-        console.info(tokenState);        
+        console.log(tokenState);        
 
         let cuantroEnRaya = false;
         for(let idFil = 0; idFil < object.files ; idFil++){

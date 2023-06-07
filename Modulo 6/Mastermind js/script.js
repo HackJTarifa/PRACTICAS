@@ -166,7 +166,7 @@ function mastermind(){
                 }
             }while(winCombination.length < 5)
 
-            console.info(winCombination[0] + " " + winCombination[1] + " " + winCombination[2] + " " + winCombination[3] + " " + winCombination[4]);
+            console.log(winCombination[0] + " " + winCombination[1] + " " + winCombination[2] + " " + winCombination[3] + " " + winCombination[4]);
             return winCombination;
         }
 
@@ -179,7 +179,7 @@ function mastermind(){
             answer = prompt('Quieres jugar otra partida(SI/NO): ');
             isAnswerdValid = answer === 'SI' || answer === 'NO';
             if (!isAnswerdValid){
-                console.info("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
+                console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
         return (answer === 'SI');

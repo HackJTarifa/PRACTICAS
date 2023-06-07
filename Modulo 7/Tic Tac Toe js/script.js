@@ -7,7 +7,7 @@ function createApp(){
             do{
                 app.game.init();
             }while(playAgain())    
-            console.info("PROGRAMM END");  
+            console.log("PROGRAMM END");  
         }
     }
     return app;
@@ -19,7 +19,7 @@ function createApp(){
             answer = prompt('Quieres jugar otra partida(SI/NO): ');
             isAnswerdValid = answer === 'SI' || answer === 'NO';
             if (!isAnswerdValid){
-                console.info("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
+                console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)    
         return answer === 'SI'; 
@@ -62,7 +62,7 @@ function createGame(){
         game.board.print();
     
         game.win = playerWin();
-        console.info("TIRADA END")
+        console.log("TIRADA END")
     }
 
     /**
@@ -112,21 +112,21 @@ function createGame(){
             file = getPosition("FILE");
             column = getPosition("COLUMN");
         } while(!game.board.isPositionValid(file, column));
-        console.info("SE HA ELEGIDO LA FILA: " + file);
-        console.info("SE HA ELEGIDO LA COLUMNA: " + column);
+        console.log("SE HA ELEGIDO LA FILA: " + file);
+        console.log("SE HA ELEGIDO LA COLUMNA: " + column);
         return { file, column };
     }
 
     function getPosition(fileOColumn){
         let fileColumn = parseInt(prompt("Agrega una posicion valida del tablero " + fileOColumn + " 1-2-3"));
         const OFFSET = 1;
-        console.info(fileColumn);
+        console.log(fileColumn);
         return fileColumn - OFFSET;
     }
 
     function printMessageEndGame(){
         const PLAYERS = ["PLAYER 1", "PLAYER 2"];
-                (game.win) ? console.info("ENORABUENA EL JUGADOR: " + PLAYERS[game.player] + " HA GANADO"): console.info("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");       
+                (game.win) ? console.log("ENORABUENA EL JUGADOR: " + PLAYERS[game.player] + " HA GANADO"): console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");       
     }
 }
 
@@ -161,9 +161,9 @@ function createBoard(files, columns){
             return false;
         },
         print: function(){
-            console.info(board.boardState[0]);
-            console.info(board.boardState[1]);
-            console.info(board.boardState[2]);
+            console.log(board.boardState[0]);
+            console.log(board.boardState[1]);
+            console.log(board.boardState[2]);
         }    
     }
     return board;
@@ -172,7 +172,7 @@ function createBoard(files, columns){
         if(board.boardState[file][column] === "0"){
             return true;
         }
-        console.info("LA POSICION ELEGIDA NO ES VALIDA POR QUE YA ESTA OCUPADA");
+        console.log("LA POSICION ELEGIDA NO ES VALIDA POR QUE YA ESTA OCUPADA");
         return false;
     }
 
@@ -183,7 +183,7 @@ function createBoard(files, columns){
         if(validFile && validColumn){
             return true;
         } 
-        console.info("LA POSICION NO ES VALIDA, NO ESTA DENTRO DEL TABLERO");
+        console.log("LA POSICION NO ES VALIDA, NO ESTA DENTRO DEL TABLERO");
         return false;
     }
 }

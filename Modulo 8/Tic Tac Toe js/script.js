@@ -1,4 +1,4 @@
-// ------------------- START PROGRAMA -------------------
+
 function createApp(){
     return {
         game: createGame(),

@@ -77,9 +77,9 @@ function ticTacToe() {
                 }
             } 
 
-            console.info(board[0]);
-            console.info(board[1]);
-            console.info(board[2]);
+            console.log(board[0]);
+            console.log(board[1]);
+            console.log(board[2]);
             return board;
         }
 

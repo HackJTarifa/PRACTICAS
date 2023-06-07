@@ -3,7 +3,7 @@ function connecta4() {
     do{
         gameInit();    
     }while(playAgain())
-    console.info("EL JUEGO CONECTA 4 HA TERMINADO ");
+    console.log("EL JUEGO CONECTA 4 HA TERMINADO ");
     
     function gameInit() {
         let game = {
@@ -78,7 +78,7 @@ function connecta4() {
         }
 
         function playerWin(board, tokenState, FILES, COLUMNS){
-            console.info(tokenState);        
+            console.log(tokenState);        
 
             let cuantroEnRaya = false;
             for(let idFil = 0; idFil < FILES ; idFil++){
@@ -119,19 +119,19 @@ function connecta4() {
                     return true;
                 }
             }
-            console.info("LA COLUMNA ELEGIDA NO ES VALIDA, ESTA LLENA.")
+            console.log("LA COLUMNA ELEGIDA NO ES VALIDA, ESTA LLENA.")
             return false;
         }
 
         function printTablero(board){
-            console.info(board[0]);
-            console.info(board[1]);
-            console.info(board[2]);
-            console.info(board[3]);
-            console.info(board[4]);
-            console.info(board[5]);
-            console.info(board[6]);
-            console.info(" ");
+            console.log(board[0]);
+            console.log(board[1]);
+            console.log(board[2]);
+            console.log(board[3]);
+            console.log(board[4]);
+            console.log(board[5]);
+            console.log(board[6]);
+            console.log(" ");
         }
 
         function updateTablero(board, column, tokenstate){
@@ -159,9 +159,9 @@ function connecta4() {
         function printMessageEndGame(win, player){
             const PLAYERS = ["PLAYER 1", "PLAYER 2"];
             if (win){
-                console.info("ENORABUENA EL JUGADOR: " + PLAYERS[player] + " HA GANADO");
+                console.log("ENORABUENA EL JUGADOR: " + PLAYERS[player] + " HA GANADO");
             }else{
-                console.info("NO HAY MAS MOVIMIENTOS POSIBLES, EMPATE");
+                console.log("NO HAY MAS MOVIMIENTOS POSIBLES, EMPATE");
             }
         }
     }
@@ -173,7 +173,7 @@ function connecta4() {
             answer = prompt('QUIERES JUGAR OTRA PARTIDA(SI/NO): ');
             isAnswerdValid = answer === 'SI' || answer === 'NO';
             if (!isAnswerdValid){
-                console.info("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
+                console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
     
