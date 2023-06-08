@@ -66,20 +66,13 @@ function ticTacToe() {
          * @returns {Array} 
          */
         function initializeBoard(files, columns, tokenEstateEmpy){
-            let board = new Array(files);
-            for(let i = 0; i < board.length; i++){
-                board[i] = new Array(columns);
-            }
-
-            for(let i = 0; i < board.length; i++){             
-                for (let j = 0; j < board[i].length; j++){
+            let board = [];
+            for(let i = 0; i < columns; i++){
+                board[i] = [];
+                for(let j = 0; j < files; j++){
                     board[i][j] = tokenEstateEmpy;
                 }
-            } 
-
-            console.log(board[0]);
-            console.log(board[1]);
-            console.log(board[2]);
+            }     
             return board;
         }
 

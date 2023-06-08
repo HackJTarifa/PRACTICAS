@@ -78,21 +78,15 @@ function ticTacToe() {
          * @returns {Array} 
          */
         function inicializeTablero(files, columns){
-            let tablero = new Array(files);
-            for(let i = 0; i < tablero.length; i++){
-                tablero[i] = new Array(columns);
-            }
-
-            for(let i = 0; i < tablero.length; i++){             
-                for (let j = 0; j < tablero[i].length; j++){
-                    tablero[i][j] = "0";
+            const initialValue = "0";
+            let board = [];
+            for(let i = 0; i < columns; i++){
+                board[i] = [];
+                for(let j = 0; j < files; j++){
+                    board[i][j] = initialValue;
                 }
-            } 
-
-            console.log(tablero[0]);
-            console.log(tablero[1]);
-            console.log(tablero[2]);
-            return tablero;
+            }     
+            return board;
         }
 
         /**

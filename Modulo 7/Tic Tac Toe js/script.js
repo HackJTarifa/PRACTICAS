@@ -65,21 +65,6 @@ function createGame(){
         console.log("TIRADA END")
     }
 
-    /**
-    function playerWin(){
-        if(game.board.getCell(0, 0) ==  game.tokenState[game.player] && game.board.getCell(0,1) == game.tokenState[game.player] && game.board.getCell(0,2) == game.tokenState[game.player] ||
-        game.board.getCell(1, 0) == game.tokenState[game.player] && game.board.getCell(1,1) == game.tokenState[game.player] && game.board.getCell(1,2) == game.tokenState[game.player] ||
-        game.board.getCell(2, 0) == game.tokenState[game.player] && game.board.getCell(2,1) == game.tokenState[game.player] && game.board.getCell(2,2) == game.tokenState[game.player] ||
-        game.board.getCell(0, 0) == game.tokenState[game.player] && game.board.getCell(1,0) == game.tokenState[game.player] && game.board.getCell(2,0) == game.tokenState[game.player] ||
-        game.board.getCell(0, 1) == game.tokenState[game.player] && game.board.getCell(1,1) == game.tokenState[game.player] && game.board.getCell(2,1) == game.tokenState[game.player] ||
-        game.board.getCell(0, 2) == game.tokenState[game.player] && game.board.getCell(1,2) == game.tokenState[game.player] && game.board.getCell(2,2) == game.tokenState[game.player] ||
-        game.board.getCell(0, 0) == game.tokenState[game.player] && game.board.getCell(1,1) == game.tokenState[game.player] && game.board.getCell(2,2) == game.tokenState[game.player] ||
-        game.board.getCell(2, 0) == game.tokenState[game.player] && game.board.getCell(1,1) == game.tokenState[game.player] && game.board.getCell(0,2) == game.tokenState[game.player]){
-            return true;
-            }
-        return false;
-    }*/
-
     function playerWin() {      
         const winConditions = [
           [[0, 0], [0, 1], [0, 2]], // Rows
@@ -136,16 +121,14 @@ function createBoard(files, columns){
         columns: columns,
         boardState: NaN,
         inicializeTablero: function(files, columns){
-            let newBoard = new Array(files);
-            for(let i = 0; i < files; i++){
-                newBoard[i] = new Array(columns);
-            }
-        
-            for(let i = 0; i < files; i++){             
-                for (let j = 0; j < columns; j++){
-                    newBoard[i][j] = "0";
+            let newBoard = [];
+            const initialValue = "0";
+            for(let i = 0; i < columns; i++){
+                newBoard[i] = [];
+                for (let j = 0; j < files; j++){
+                    newBoard[i][j] = initialValue;
                 }
-            } 
+            }
             board.boardState = newBoard;
         }, 
         update: function(file, column, token){

@@ -118,16 +118,14 @@ function createBoard(files, columns){
         columns: columns,
         boardState: NaN,
         inicializeTablero: function(files, columns){
-            let newBoard = new Array(files);
-            for(let i = 0; i < files; i++){
-                newBoard[i] = new Array(columns);
-            }
-        
-            for(let i = 0; i < files; i++){             
-                for (let j = 0; j < columns; j++){
-                    newBoard[i][j] = "0";
+            let newBoard = [];
+            const initialValue = "0";
+            for(let i = 0; i < columns; i++){
+                newBoard[i] = [];
+                for (let j = 0; j < files; j++){
+                    newBoard[i][j] = initialValue;
                 }
-            } 
+            }
             this.boardState = newBoard;
         }, 
         update: function(file, column, token){

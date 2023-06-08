@@ -4,23 +4,23 @@ do{
     let player = 0;
     let mov_restantes = 9;    
     const TOKENSTATE = ['X', 'Y'];
-    let tablero = inicializeTablero(3, 3);
-    console.log(tablero);
+    let board = inicialitzeBoard(3, 3);
+    console.log(board);
     let file, column;
     let win;
     do{
         do{
             file = getFile();
             column = getColumn();
-        }while(!isPosititionValid(tablero, file, column))
+        }while(!isPosititionValid(board, file, column))
         console.log("SE HA ELEGIDO LA FILA: " + file);
         console.log("SE HA ELEGIDO LA COLUMNA: " + column);
         
 
-        tablero[file][column] = TOKENSTATE[player];
-        printTablero(tablero);
+        board[file][column] = TOKENSTATE[player];
+        printBoardState(board);
 
-        win = playerWin(tablero, TOKENSTATE[player]);
+        win = playerWin(board, TOKENSTATE[player]);
         if(!win){
             player = (player + 1) % NPLAYERS;
             mov_restantes -= 1;
@@ -33,24 +33,24 @@ do{
 console.log("EL JUEGO A FINALIZADO, HASTA OTRA");
 
 
-function printTablero(tablero){
-    console.log(tablero[0]);
-    console.log(tablero[1]);
-    console.log(tablero[2]);
+function printBoardState(board){
+    console.log(board[0]);
+    console.log(board[1]);
+    console.log(board[2]);
 }
 
 function playAgain(){
-    let respuesta;
+    let answer;
     let isAnswerdValid;
     do{
-        respuesta = prompt('Quieres jugar otra partida: ');
-        isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
+        answer = prompt('Quieres jugar otra partida(SI/NO): ');
+        isAnswerdValid = answer === 'SI' || answer === 'NO';
         if (!isAnswerdValid){
             console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
         }
     }while(!isAnswerdValid)
 
-    if (respuesta === 'SI'){
+    if (answer === 'SI'){
         return true;
     }
     return false; 
@@ -74,15 +74,15 @@ function gameEnd(win, mov_restantes){
     return false;
 }
 
-function playerWin(tablero, tokenState){
-    if(tablero[0][0] ==  tokenState && tablero[0][1] == tokenState && tablero[0][2] == tokenState ||
-        tablero[1][0] == tokenState && tablero[1][1] == tokenState && tablero[1][2] == tokenState ||
-        tablero[2][0] == tokenState && tablero[2][1] == tokenState && tablero[2][2] == tokenState ||
-        tablero[0][0] == tokenState && tablero[1][0] == tokenState && tablero[2][0] == tokenState ||
-        tablero[0][1] == tokenState && tablero[1][1] == tokenState && tablero[2][1] == tokenState ||
-        tablero[0][2] == tokenState && tablero[1][2] == tokenState && tablero[2][2] == tokenState ||
-        tablero[0][0] == tokenState && tablero[1][1] == tokenState && tablero[2][2] == tokenState ||
-        tablero[2][0] == tokenState && tablero[1][1] == tokenState && tablero[0][2] == tokenState){
+function playerWin(board, token){
+    if(board[0][0] ==  token && board[0][1] == token && board[0][2] == token ||
+        board[1][0] == token && board[1][1] == token && board[1][2] == token ||
+        board[2][0] == token && board[2][1] == token && board[2][2] == token ||
+        board[0][0] == token && board[1][0] == token && board[2][0] == token ||
+        board[0][1] == token && board[1][1] == token && board[2][1] == token ||
+        board[0][2] == token && board[1][2] == token && board[2][2] == token ||
+        board[0][0] == token && board[1][1] == token && board[2][2] == token ||
+        board[2][0] == token && board[1][1] == token && board[0][2] == token){
         //playerWin = true;
         return true;
         }
@@ -126,24 +126,21 @@ function getColumn(){
     return column - OFFSET; 
 }
 
-function isPosititionValid(tablero, file, column){
-    if(tablero[file][column] === "0"){
+function isPosititionValid(board, file, column){
+    if(board[file][column] === "0"){
         return true;
     }
     return false;
 }
 
-function inicializeTablero(files, columns){
-    let tablero = new Array(files);
-    for(let i = 0; i < tablero.length; i++){
-        tablero[i] = new Array(columns);
-    }
-
-
-    for(let i = 0; i < tablero.length; i++){             
-        for (let j = 0; j < tablero[i].length; j++){
-            tablero[i][j] = "0";
+function inicialitzeBoard(files, columns){
+    const initialValue = "0";
+    let board = [];
+    for(let i = 0; i < columns; i++){
+        board[i] = [];
+        for(let j = 0; j < files; j++){
+            board[i][j] = initialValue;
         }
-    } 
-     return tablero;
+    }     
+    return board;
 }

@@ -44,17 +44,15 @@ function ticTacToe() {
         printMessageEndGame(win, player);
     
         function inicializeTablero(files, columns){
-            let tablero = new Array(files);
-            for(let i = 0; i < tablero.length; i++){
-                tablero[i] = new Array(columns);
-            }
-
-            for(let i = 0; i < tablero.length; i++){             
-                for (let j = 0; j < tablero[i].length; j++){
-                    tablero[i][j] = "0";
+            const initialValue = "0";
+            let board = [];
+            for(let i = 0; i < columns; i++){
+                board[i] = [];
+                for(let j = 0; j < files; j++){
+                    board[i][j] = initialValue;
                 }
-            } 
-            return tablero;
+            }     
+            return board;
         }
 
         function gameEnd(winPlayer, mov_restantes){

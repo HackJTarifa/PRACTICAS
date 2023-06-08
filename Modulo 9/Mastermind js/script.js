@@ -1,34 +1,35 @@
 function createBoard(){
+    const VALID_COLORS = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"];
+    let winCombination = [];
+
     return {
-        validColors: ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"],
-        winCombination: [],
         createWinCombination: function(){
-            let winCombination = [];
+            let combination = [];
             do{
                 let repeat = false;
-                const index = Math.floor(Math.random() * this.validColors.length);
-                for(let i = 0; i < winCombination.length; i++){
-                    if(winCombination[i] === this.validColors[index]){
+                const index = Math.floor(Math.random() * VALID_COLORS.length);
+                for(let i = 0; i < combination.length; i++){
+                    if(combination[i] === VALID_COLORS[index]){
                         repeat = true;
                     }
                 }
                 if(!repeat){
-                    winCombination.push(this.validColors[index]);
+                    combination.push(VALID_COLORS[index]);
                 }
-            }while(winCombination.length < 5)
+            }while(combination.length < 5)
     
-            console.log(winCombination[0] + " " + winCombination[1] + " " + winCombination[2] + " " + winCombination[3] + " " + winCombination[4]);
-            this.winCombination = winCombination;
+            console.log(combination[0] + " " + combination[1] + " " + combination[2] + " " + combination[3] + " " + combination[4]);
+            winCombination = combination;
         },
-        checkCombinacionHits: function(InputCombination){
+        checkCombinacionHits: function(InputCombination){            
             let supportCombination = ["VACIO", "VACIO", "VACIO", "VACIO", "VACIO"];
             for(let i = 0; i < InputCombination.length; i++){
-                if(InputCombination[i] === this.winCombination[i]){
+                if(InputCombination[i] === winCombination[i]){
                     supportCombination[i] = "BLANCO";
                 }else{
                     let encontrado = false;
-                    for(let j = 0; j < this.winCombination.length && !encontrado; j++){
-                        if(InputCombination[i] === this.winCombination[j]){
+                    for(let j = 0; j < winCombination.length && !encontrado; j++){
+                        if(InputCombination[i] === winCombination[j]){
                             supportCombination[i] = "NEGRO";
                             encontrado = true;
                         }
@@ -53,47 +54,45 @@ function createBoard(){
 }
 
 function createGame(){
+    let mov_restantes = 15;
+    const validColors = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"];
+    let combinacionesPropuestas = [];
+    let hits = [];
+    let win = false;
+    let inputCombination = NaN;
+    let board = createBoard();
+
     return {
-        mov_restantes: 15,
-        validColors: ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"],
-        combinacionesPropuestas: [],
-        hits: [],
-        win: false,
-        inputCombination: NaN,
-        board: createBoard(),
-        combinacionGanadora: [],
         init: function(){
-            // game.combinacionGanadora = getWinCombination();
-            this.board.createWinCombination();
-            //const combinacionIngresada;
+            board.createWinCombination();
             do {
-                const combinacionIngresada = getCombinacion(this);
-                this.hits = this.board.checkCombinacionHits(combinacionIngresada, this.board.winCombination);
-                this.win = this.board.win(this.hits);
-                updateHistorial(combinacionIngresada, this.hits, this);
+                const combinacionIngresada = getCombinacion();
+                hits = board.checkCombinacionHits(combinacionIngresada, board.winCombination);
+                win = board.win(hits);
+                updateHistorial(combinacionIngresada, hits);
         
-                if (!this.win) {
-                    this.mov_restantes -= 1;
+                if (!win) {
+                    mov_restantes -= 1;
                 }
-            } while (!gameEnd(this)); // nor, si las dos son falsas repite bucle
-            printMessageEndGame(this);        
+            } while (!gameEnd()); // nor, si las dos son falsas repite bucle
+            printMessageEndGame();        
         }
 
     }
 
-    function getCombinacion(object){
+    function getCombinacion(){
         let vaildCombination;
                 
         do{                     
             vaildCombination = false;
             let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
-            object.inputCombination = entrada.split(' ');
+            inputCombination = entrada.split(' ');
 
             let nColoresValid = 0;
-            for(let i = 0; i < object.inputCombination.length; i++){
+            for(let i = 0; i < inputCombination.length; i++){
                 let colorValido = false;
-                for (let j = 0; j < object.validColors.length && !colorValido ; j++){
-                    if(object.inputCombination[i] === object.validColors[j]){
+                for (let j = 0; j < validColors.length && !colorValido ; j++){
+                    if(inputCombination[i] === validColors[j]){
                         colorValido = true;
                     }
                 }
@@ -107,31 +106,31 @@ function createGame(){
                 vaildCombination = true;
             } 
         }while(!vaildCombination)
-        return object.inputCombination;
+        return inputCombination;
     }
 
-    function updateHistorial(InputCombination, aciertos, object){
-        object.combinacionesPropuestas.push(InputCombination);
-        object.hits.push(aciertos)
+    function updateHistorial(InputCombination, aciertos){
+        combinacionesPropuestas.push(InputCombination);
+        hits.push(aciertos)
         console.log(InputCombination + " -- " + aciertos );
     }
 
-    function gameEnd(object){
-        return object.win || object.mov_restantes <= 0;  
+    function gameEnd(){
+        return win || mov_restantes <= 0;  
     }
 
-    function printMessageEndGame(object){
-        object.win ? console.log("ENORABUENA EL JUGAODR HA GANADO"):
+    function printMessageEndGame(){
+        win ? console.log("ENORABUENA EL JUGAODR HA GANADO"):
                  console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
     }
 }
 
 function createApp(){
+    let game = createGame();
     return {
-        game: createGame(),
         start: function(){
             do{
-                this.game.init();
+                game.init();
             }while(playAgain())    
             console.log("PROGRAMA END"); 
         }

@@ -1,10 +1,10 @@
 
 function createApp(){
+    let game = createGame();
     return {
-        game: createGame(),
         start: function(){
             do{
-                this.game.init();
+                game.init();
             }while(playAgain())    
             console.log("PROGRAMM END");  
         }
@@ -25,44 +25,46 @@ function createApp(){
 }
 
 function createGame(){
+    const TOKEN_STATE = ['X', 'Y'];
+    const N_PLAYERS = 2;
+    let player = 0;
+    let mov_restantes = 9;
+    let board = NaN;
+    let win =  false; 
+
     return {
-        TOKEN_STATE: ['X', 'Y'],
-        N_PLAYERS: 2,
-        player: 0,
-        mov_restantes: 9,
-        board: NaN,// = new Tablero(3, 3);
-        win: false, 
+
         init: function(){
-            this.board = createBoard(3, 3);
-            this.board.inicializeTablero(3, 3);
-            this.board.print();
+            board = createBoard(3, 3);
+            board.inicializeTablero(3, 3);
+            board.print();
             
             do {
-                nextThrow(this);
-                if (!this.win) {
-                    this.player = (this.player + 1) % this.N_PLAYERS;
-                    this.mov_restantes -= 1;
+                nextThrow();
+                if (!win) {
+                    player = (player + 1) % N_PLAYERS;
+                    mov_restantes -= 1;
                 }
-            }while(!gameEnd(this))
-            printMessageEndGame(this);
+            }while(!gameEnd())
+            printMessageEndGame();
         },
     }
 
-    function gameEnd(object){
-        return object.win || object.mov_restantes <= 0;
+    function gameEnd(){
+        return win || mov_restantes <= 0;
     }
 
-    function nextThrow(object) {
-        let { file, column } = getFileColumn(object);
+    function nextThrow() {
+        let { file, column } = getFileColumn();
     
-        object.board.update(file, column, object.TOKEN_STATE[object.player]);
-        object.board.print();
+        board.update(file, column, TOKEN_STATE[player]);
+        board.print();
     
-        object.win = playerWin(object);
+        win = playerWin();
         console.log("TIRADA END")
     }
 
-    function playerWin(object) {      
+    function playerWin() {      
         const winConditions = [
           [[0, 0], [0, 1], [0, 2]], // Rows
           [[1, 0], [1, 1], [1, 2]],
@@ -77,7 +79,7 @@ function createGame(){
         for(const cells of winConditions) {
             let hits = 0;
             for (const [row, col] of cells) {
-                if (object.board.getCell(row, col,) === object.TOKEN_STATE[object.player]){
+                if (board.getCell(row, col,) === TOKEN_STATE[player]){
                     hits += 1;
                 }
             }
@@ -88,12 +90,12 @@ function createGame(){
         return false;
       }
 
-    function getFileColumn(object) {
+    function getFileColumn() {
         let file, column;
         do {
             file = getPosition("FILE");
             column = getPosition("COLUMN");
-        } while(!object.board.isPositionValid(file, column));
+        } while(!board.isPositionValid(file, column));
         console.log("SE HA ELEGIDO LA FILA: " + file);
         console.log("SE HA ELEGIDO LA COLUMNA: " + column);
         return { file, column };
@@ -106,52 +108,50 @@ function createGame(){
         return fileColumn - OFFSET;
     }
 
-    function printMessageEndGame(object){
+    function printMessageEndGame(){
         const PLAYERS = ["PLAYER 1", "PLAYER 2"];
-                (object.win) ? console.log("ENORABUENA EL JUGADOR: " + PLAYERS[object.player] + " HA GANADO"): console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");       
+        win ? console.log("ENORABUENA EL JUGADOR: " + PLAYERS[player] + " HA GANADO"): console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");       
     }
 }
 
 function createBoard(files, columns){
+    let boardState = NaN;
+
     return {
-        files: files,
-        columns: columns,
         boardState: NaN,
         inicializeTablero: function(files, columns){
-            let newBoard = new Array(files);
-            for(let i = 0; i < files; i++){
-                newBoard[i] = new Array(columns);
-            }
-        
-            for(let i = 0; i < files; i++){             
-                for (let j = 0; j < columns; j++){
-                    newBoard[i][j] = "0";
+            let newBoard = [];
+            const initialValue = "0";
+            for(let i = 0; i < columns; i++){
+                newBoard[i] = [];
+                for (let j = 0; j < files; j++){
+                    newBoard[i][j] = initialValue;
                 }
-            } 
-            this.boardState = newBoard;
+            }
+            boardState = newBoard;
         }, 
         update: function(file, column, token){
-            this.boardState[file][column] = token;
+            boardState[file][column] = token;
         }, 
         getCell: function(file, column){
-            return this.boardState[file][column];
+            return boardState[file][column];
         }, 
         isPositionValid: function(file, column){
-            if (validatePositionRange(file, column, this)){
-                return isEmpy(file, column, this);            
+            if (validatePositionRange(file, column)){
+                return isEmpy(file, column);            
             } 
             return false;
         },
         print: function(){
             console.log("check inside funciton print");
-            console.log(this.boardState[0]);
-            console.log(this.boardState[1]);
-            console.log(this.boardState[2]);
+            console.log(boardState[0]);
+            console.log(boardState[1]);
+            console.log(boardState[2]);
         }    
     }
 
-    function isEmpy(file, column, object){
-        if(object.boardState[file][column] === "0"){
+    function isEmpy(file, column){
+        if(boardState[file][column] === "0"){
             return true;
         }
         console.log("LA POSICION ELEGIDA NO ES VALIDA POR QUE YA ESTA OCUPADA");

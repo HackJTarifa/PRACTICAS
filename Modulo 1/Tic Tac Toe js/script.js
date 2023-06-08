@@ -4,7 +4,7 @@ let age = prompt('Introduce tu edad: ');
 document.writeln(`<br\> Hola mundo ${name} tienes ${age} y que te den  <br\>`);
 console.log("Hello world!");
 
-let respuesta;
+let answer;
 const playAgain = 'SI';
 
 do{
@@ -15,7 +15,7 @@ do{
     let playerWin = false;
     let mov_restantes = 9;    
     let tokenState = ['X', 'Y'];
-    let tablero =[[0,0,0],[0,0,0],[0,0,0]];
+    let board =[[0,0,0],[0,0,0],[0,0,0]];
     do{
         // si fila es un numero  1, 2, 3
         // si columna es un numero 1, 2, 3
@@ -49,11 +49,11 @@ do{
            }while(incorrecFile || incorrectColumn)    
            // END TESTEADO VALORES DE ENTRADA ------------------------------------------------------
 
-            if(tablero[fila - 1][colum - 1] == 0){
+            if(board[fila - 1][colum - 1] == 0){
                 if(player == 0){
-                    tablero[fila - 1][colum - 1] = "X";
+                    board[fila - 1][colum - 1] = "X";
                 }else{
-                    tablero[fila - 1][colum - 1] = "Y";
+                    board[fila - 1][colum - 1] = "Y";
                 }
 
                 posicionValida = true;
@@ -62,19 +62,19 @@ do{
             } 
         }while(!posicionValida)
 
-        console.log(tablero[0][0] + " " + tablero[0][1] + " " + tablero[0][2]);
-        console.log(tablero[1][0] + " " + tablero[1][1] + " " + tablero[1][2]);
-        console.log(tablero[2][0] + " " + tablero[2][1] + " " + tablero[2][2]);
+        console.log(board[0][0] + " " + board[0][1] + " " + board[0][2]);
+        console.log(board[1][0] + " " + board[1][1] + " " + board[1][2]);
+        console.log(board[2][0] + " " + board[2][1] + " " + board[2][2]);
 
         //Comprovar tres en ralla
-        if(tablero[0][0] ==  tokenState[player] && tablero[0][1] == tokenState[player] && tablero[0][2] == tokenState[player] ||
-            tablero[1][0] == tokenState[player] && tablero[1][1] == tokenState[player] && tablero[1][2] == tokenState[player] ||
-            tablero[2][0] == tokenState[player] && tablero[2][1] == tokenState[player] && tablero[2][2] == tokenState[player] ||
-            tablero[0][0] == tokenState[player] && tablero[1][0] == tokenState[player] && tablero[2][0] == tokenState[player] ||
-            tablero[0][1] == tokenState[player] && tablero[1][1] == tokenState[player] && tablero[2][1] == tokenState[player] ||
-            tablero[0][2] == tokenState[player] && tablero[1][2] == tokenState[player] && tablero[2][2] == tokenState[player] ||
-            tablero[0][0] == tokenState[player] && tablero[1][1] == tokenState[player] && tablero[2][2] == tokenState[player] ||
-            tablero[2][0] == tokenState[player] && tablero[1][1] == tokenState[player] && tablero[0][2] == tokenState[player]){
+        if(board[0][0] ==  tokenState[player] && board[0][1] == tokenState[player] && board[0][2] == tokenState[player] ||
+            board[1][0] == tokenState[player] && board[1][1] == tokenState[player] && board[1][2] == tokenState[player] ||
+            board[2][0] == tokenState[player] && board[2][1] == tokenState[player] && board[2][2] == tokenState[player] ||
+            board[0][0] == tokenState[player] && board[1][0] == tokenState[player] && board[2][0] == tokenState[player] ||
+            board[0][1] == tokenState[player] && board[1][1] == tokenState[player] && board[2][1] == tokenState[player] ||
+            board[0][2] == tokenState[player] && board[1][2] == tokenState[player] && board[2][2] == tokenState[player] ||
+            board[0][0] == tokenState[player] && board[1][1] == tokenState[player] && board[2][2] == tokenState[player] ||
+            board[2][0] == tokenState[player] && board[1][1] == tokenState[player] && board[0][2] == tokenState[player]){
             playerWin = true;
         }else{
             player = (player + 1) % nPlayers;
@@ -89,13 +89,13 @@ do{
     }
     
     // COMPRAVACION SI EL JUGADOR QUIERE VOLVER A JUGAR.
-    respuesta = prompt('Quieres jugar otra partida: ');
-    let isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
+    answer = prompt('Quieres jugar otra partida: ');
+    let isAnswerdValid = answer === 'SI' || answer === 'NO';
     do{
         if (!isAnswerdValid){
-            respuesta = prompt("La respuesta no es valida, solamente se acepta SI o NO, Quires jugar otra partida: ");
-            isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
+            answer = prompt("La respuesta no es valida, solamente se acepta SI o NO, Quires jugar otra partida: ");
+            isAnswerdValid = answer === 'SI' || answer === 'NO';
         }
     }while(!isAnswerdValid)
-}while(respuesta === playAgain)
+}while(answer === playAgain)
 console.log("EL JUEGO TIC TAC TOE HA FINALIZADO <br\>");
