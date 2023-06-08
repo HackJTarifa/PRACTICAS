@@ -1,4 +1,6 @@
 function createdBoard(files, columns){
+    let fnBoard;
+
     function inicializeBoard(files, columns){    
         const initialValue = '0'; 
         let board = [];
@@ -10,22 +12,21 @@ function createdBoard(files, columns){
         }
         return board;
     }
-
-    //const files = files;
-    //const columns = columns;
-    let board =  inicializeBoard(files, columns);
-    let movesLeft = files * columns;
-
-    return {        
+    
+    fnBoard = {        
+        files: files,
+        columns: columns,
+        board: inicializeBoard(files, columns),
+        movesLeft: files * columns,
         getMovesLeft: function(){
-            return movesLeft;
+            return fnBoard.movesLeft;
         },
         getPosition: function(column, file){
-            return board[column][file]; 
+            return fnBoard.board[column][file]; 
         },
         isPositionValid: function(column){
-            for(let i = 0; i < files; i++){ 
-                if(board[column][i] == "0"){
+            for(let i = 0; i < fnBoard.files; i++){ 
+                if(fnBoard.board[column][i] == "0"){
                     return true;
                 }
             }
@@ -34,58 +35,59 @@ function createdBoard(files, columns){
         },
         update: function(column, tokenState){
             let index = 0;
-            while(board[column][index] == "RED" || board[column][index] == "YELLOW"){
+            while(fnBoard.board[column][index] == "RED" || fnBoard.board[column][index] == "YELLOW"){
                 index += 1;
             }    
-            board[column][index] = tokenState;
-            movesLeft -= 1;
+            fnBoard.board[column][index] = tokenState;
+            fnBoard.movesLeft -= 1;
         },
         print: function(){
-            for(let i = 0; i < columns; i++){  
-                console.log((board)[i]);
+            for(let i = 0; i < fnBoard.columns; i++){  
+                console.log((fnBoard.board)[i]);
             }
         }
     }
+    return fnBoard;
 }
 
 function createGame(){
-    const N_PLAYERS = 2;
-    const TOKEN_STATE = ['RED', 'YELLOW'];
-    const COLUMNS = 7;
-    const FILES = 6;
-    let player = 0;
-    let win = false;
-    let board = NaN;
-
-    return {
+    let game = {
+        nPlayers: 2,
+        tokenState: ['RED', 'YELLOW'],
+        columns: 7,
+        files: 6,
+        player: 0,
+        win: false,
+        board: NaN,
         init: function(){
-            board = createdBoard(FILES, COLUMNS);
+            game.board = createdBoard(game.files, game.columns);
 
             do {
                 let column;
                 do {
                     column = getColumn();
-                } while (!board.isPositionValid(column));
-                board.update(column, TOKEN_STATE[player]);
+                } while (!game.board.isPositionValid(column));
+                game.board.update(column, game.tokenState[game.player]);
                 printBoard();
 
-                win = playerWin(this);
-                if (!win) {
-                    player = (player + 1) % N_PLAYERS;
+                game.win = playerWin();
+                if (!game.win) {
+                    game.player = (game.player + 1) % game.nPlayers;
                 }
-            } while (!thisEnd()) // nor, si las dos son falsas repite bucle
-            printMessageEndthis();
+            } while (!gameEnd()) // nor, si las dos son falsas repite bucle
+            printMessageEndGame();
         }           
     }
+    return game;
 
     function playerWin(){
-        let tokenState = TOKEN_STATE[player];
+        let tokenState = game.tokenState[game.player];
         console.log(tokenState);        
 
         let cuantroEnRaya = false;
-        for(let idFil = 0; idFil < FILES ; idFil++){
-            for(let idCol = 0; idCol < COLUMNS; idCol++){
-                cuantroEnRaya = checkPosition(idCol, idFil, tokenState);
+        for(let idFil = 0; idFil < game.files ; idFil++){
+            for(let idCol = 0; idCol < game.columns; idCol++){
+                cuantroEnRaya = checkPosition( idCol, idFil, tokenState);
                 if (cuantroEnRaya){
                     return true;
                 }
@@ -93,46 +95,47 @@ function createGame(){
         }
         return false;
 
+       // iC = indexColumns, iF = indexFiles, tS = tokenState
        function checkPosition(column, row, token) {
-            const CONNECTA_SIZE = 4;
-            if(CONNECTA_SIZE + column < 7){  
-                if (board.getPosition(column, row) == token &&
-                    board.getPosition(column + 1, row) == token &&
-                    board.getPosition(column + 2, row) == token && 
-                    board.getPosition(column + 3, row) == token){
-                    return true;
-                }
-            }                 
-            if(CONNECTA_SIZE + row < 6){
-                if(board.getPosition(column, row) == token && 
-                    board.getPosition(column, row + 1) == token && 
-                    board.getPosition(column, row + 2) == token && 
-                    board.getPosition(column, row + 3) == token){
-                    return true;
-                }
-            }
-            if(CONNECTA_SIZE + column < 7 && CONNECTA_SIZE + row < 6){
-                if(board.getPosition(column, row) == token &&
-                board.getPosition(column + 1, row + 1) == token && 
-                board.getPosition(column + 2, row + 2) == token && 
-                board.getPosition(column + 3, row + 3) == token ||
-                board.getPosition(column, row + 3) == token &&
-                board.getPosition(column + 1, row + 2) == token && 
-                board.getPosition(column + 2, row + 1) == token && 
-                board.getPosition(column + 3, row) == token) {
+        const CONNECTA_SIZE = 4;
+        if(CONNECTA_SIZE + column < 7){   
+            if (game.board.getPosition(column, row) == token &&
+                game.board.getPosition(column + 1, row) == token &&
+                game.board.getPosition(column + 2, row) == token && 
+                game.board.getPosition(column + 3, row) == token){
                 return true;
-                }
             }
-            return false;
+        }                 
+        if(CONNECTA_SIZE + row < 6){
+            if(game.board.getPosition(column, row) == token && 
+                game.board.getPosition(column, row + 1) == token && 
+                game.board.getPosition(column, row + 2) == token && 
+                game.board.getPosition(column, row + 3) == token){
+                return true;
+            }
         }
+        if(CONNECTA_SIZE + column < 7 && CONNECTA_SIZE + row < 6){
+            if(game.board.getPosition(column, row) == token &&
+            game.board.getPosition(column + 1, row + 1) == token && 
+            game.board.getPosition(column + 2, row + 2) == token && 
+            game.board.getPosition(column + 3, row + 3) == token ||
+            game.board.getPosition(column, row + 3) == token &&
+            game.board.getPosition(column + 1, row + 2) == token && 
+            game.board.getPosition(column + 2, row + 1) == token && 
+            game.board.getPosition(column + 3, row) == token) {
+            return true;
+            }
+        }
+        return false;
+    }
     }    
 
-    function thisEnd() {
-        return win || board.getMovesLeft() <= 0;
+    function gameEnd() {
+        return game.win || game.board.getMovesLeft() <= 0;
     }
 
     function printBoard(){
-        board.print();
+        game.board.print();
     }
 
     function getColumn(){
@@ -144,23 +147,24 @@ function createGame(){
        return column;
     }
 
-    function printMessageEndthis(){
+    function printMessageEndGame(){
         const PLAYERS = ["PLAYER 1", "PLAYER 2"];
-        win ? console.log("ENORABUENA EL JUGADOR: " + PLAYERS[player] + " HA GANADO"):
+        game.win ? console.log("ENORABUENA EL JUGADOR: " + PLAYERS[game.player] + " HA GANADO"):
                 console.log("NO HAY MAS MOVIMIENTOS POSIBLES, EMPATE");        
     }
 }
 
 function createApp(){
-    let game = createGame();
-    return {
+    let app = {
+        game: createGame(),
         start: function(){
             do{
-                game.init();
+                app.game.init();
             }while(playAgain())    
             console.log("PROGRAMA END");    
         }
     }
+    return app;
 
     function playAgain(){
         let userResponse;

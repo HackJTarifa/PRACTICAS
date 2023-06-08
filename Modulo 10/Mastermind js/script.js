@@ -1,35 +1,35 @@
-function createBoard(){
-    const VALID_COLORS = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"];
-    let winCombination = [];
 
-    return {
+function createBoard(){
+    let board = {
+        validColors: ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"],
+        winCombination: [],
         createWinCombination: function(){
-            let combination = [];
+            let winCombination = [];
             do{
                 let repeat = false;
-                const index = Math.floor(Math.random() * VALID_COLORS.length);
-                for(let i = 0; i < combination.length; i++){
-                    if(combination[i] === VALID_COLORS[index]){
+                const index = Math.floor(Math.random() * board.validColors.length);
+                for(let i = 0; i < winCombination.length; i++){
+                    if(winCombination[i] === board.validColors[index]){
                         repeat = true;
                     }
                 }
                 if(!repeat){
-                    combination.push(VALID_COLORS[index]);
+                    winCombination.push(board.validColors[index]);
                 }
-            }while(combination.length < 5)
+            }while(winCombination.length < 5)
     
-            console.log(combination[0] + " " + combination[1] + " " + combination[2] + " " + combination[3] + " " + combination[4]);
-            winCombination = combination;
+            console.log(winCombination[0] + " " + winCombination[1] + " " + winCombination[2] + " " + winCombination[3] + " " + winCombination[4]);
+            board.winCombination = winCombination;
         },
-        checkCombinacionHits: function(InputCombination){            
+        checkCombinacionHits: function(InputCombination){
             let supportCombination = ["VACIO", "VACIO", "VACIO", "VACIO", "VACIO"];
             for(let i = 0; i < InputCombination.length; i++){
-                if(InputCombination[i] === winCombination[i]){
+                if(InputCombination[i] === board.winCombination[i]){
                     supportCombination[i] = "BLANCO";
                 }else{
                     let encontrado = false;
-                    for(let j = 0; j < winCombination.length && !encontrado; j++){
-                        if(InputCombination[i] === winCombination[j]){
+                    for(let j = 0; j < board.winCombination.length && !encontrado; j++){
+                        if(InputCombination[i] === board.winCombination[j]){
                             supportCombination[i] = "NEGRO";
                             encontrado = true;
                         }
@@ -51,34 +51,38 @@ function createBoard(){
             return false;
         }
     }
+    return board;
 }
 
 function createGame(){
-    let mov_restantes = 15;
-    const validColors = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"];
-    let combinacionesPropuestas = [];
-    let hits = [];
-    let win = false;
-    let inputCombination = NaN;
-    let board = createBoard();
-
-    return {
+    let game = {
+        mov_restantes: 15,
+        validColors: ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"],
+        combinacionesPropuestas: [],
+        hits: [],
+        win: false,
+        inputCombination: NaN,
+        board: createBoard(),
+        combinacionGanadora: [],
         init: function(){
-            board.createWinCombination();
+            // game.combinacionGanadora = getWinCombination();
+            game.board.createWinCombination();
+            //const combinacionIngresada;
             do {
                 const combinacionIngresada = getCombinacion();
-                hits = board.checkCombinacionHits(combinacionIngresada, board.winCombination);
-                win = board.win(hits);
-                updateHistorial(combinacionIngresada, hits);
+                game.hits = game.board.checkCombinacionHits(combinacionIngresada, game.board.winCombination);
+                game.win = game.board.win(game.hits);
+                updateHistorial(combinacionIngresada, game.hits);
         
-                if (!win) {
-                    mov_restantes -= 1;
+                if (!game.win) {
+                    game.mov_restantes -= 1;
                 }
             } while (!gameEnd()); // nor, si las dos son falsas repite bucle
             printMessageEndGame();        
         }
 
     }
+    return game;
 
     function getCombinacion(){
         let vaildCombination;
@@ -86,13 +90,13 @@ function createGame(){
         do{                     
             vaildCombination = false;
             let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
-            inputCombination = entrada.split(' ');
+            game.inputCombination = entrada.split(' ');
 
             let nColoresValid = 0;
-            for(let i = 0; i < inputCombination.length; i++){
+            for(let i = 0; i < game.inputCombination.length; i++){
                 let colorValido = false;
-                for (let j = 0; j < validColors.length && !colorValido ; j++){
-                    if(inputCombination[i] === validColors[j]){
+                for (let j = 0; j < game.validColors.length && !colorValido ; j++){
+                    if(game.inputCombination[i] === game.validColors[j]){
                         colorValido = true;
                     }
                 }
@@ -106,35 +110,36 @@ function createGame(){
                 vaildCombination = true;
             } 
         }while(!vaildCombination)
-        return inputCombination;
+        return game.inputCombination;
     }
 
     function updateHistorial(InputCombination, aciertos){
-        combinacionesPropuestas.push(InputCombination);
-        hits.push(aciertos)
+        game.combinacionesPropuestas.push(InputCombination);
+        game.hits.push(aciertos)
         console.log(InputCombination + " -- " + aciertos );
     }
 
     function gameEnd(){
-        return win || mov_restantes <= 0;  
+        return game.win || game.mov_restantes <= 0;  
     }
 
     function printMessageEndGame(){
-        win ? console.log("ENORABUENA EL JUGAODR HA GANADO"):
+        game.win ? console.log("ENORABUENA EL JUGAODR HA GANADO"):
                  console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
     }
 }
 
 function createApp(){
-    let game = createGame();
-    return {
+    let app = {
+        game: createGame(),
         start: function(){
             do{
-                game.init();
+                app.game.init();
             }while(playAgain())    
             console.log("PROGRAMA END"); 
         }
     }
+    return app;
 
     function playAgain(){
         let aswerd;

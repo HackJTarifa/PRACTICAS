@@ -1,5 +1,3 @@
-
-// ------------------- START PROGRAMA -------------------
 function createApp(){
     let app = {
         game: createGame(),
