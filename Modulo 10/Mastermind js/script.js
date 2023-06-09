@@ -3,6 +3,9 @@ function createBoard(){
     let board = {
         validColors: ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"],
         winCombination: [],
+    }
+
+    return{
         createWinCombination: function(){
             let winCombination = [];
             do{
@@ -51,7 +54,6 @@ function createBoard(){
             return false;
         }
     }
-    return board;
 }
 
 function createGame(){
@@ -64,96 +66,94 @@ function createGame(){
         inputCombination: NaN,
         board: createBoard(),
         combinacionGanadora: [],
+        getCombinacion: function(){
+            let vaildCombination;
+                    
+            do{                     
+                vaildCombination = false;
+                let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
+                game.inputCombination = entrada.split(' ');
+
+                let nColoresValid = 0;
+                for(let i = 0; i < game.inputCombination.length; i++){
+                    let colorValido = false;
+                    for (let j = 0; j < game.validColors.length && !colorValido ; j++){
+                        if(game.inputCombination[i] === game.validColors[j]){
+                            colorValido = true;
+                        }
+                    }
+                    if(colorValido){
+                        nColoresValid += 1;
+                    }
+                }
+
+                const nColors = 5;
+                if(nColoresValid == nColors){
+                    vaildCombination = true;
+                } 
+            }while(!vaildCombination)
+            return game.inputCombination;
+        },
+        updateHistorial: function(InputCombination, aciertos){
+            game.combinacionesPropuestas.push(InputCombination);
+            game.hits.push(aciertos)
+            console.log(InputCombination + " -- " + aciertos );
+        },
+        gameEnd:function(){
+            return game.win || game.mov_restantes <= 0;  
+        },
+        printMessageEndGame: function(){
+            game.win ? console.log("ENORABUENA EL JUGAODR HA GANADO"):
+                    console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
+        },
+    };
+
+    return{
         init: function(){
             // game.combinacionGanadora = getWinCombination();
             game.board.createWinCombination();
             //const combinacionIngresada;
             do {
-                const combinacionIngresada = getCombinacion();
+                const combinacionIngresada = game.getCombinacion();
                 game.hits = game.board.checkCombinacionHits(combinacionIngresada, game.board.winCombination);
                 game.win = game.board.win(game.hits);
-                updateHistorial(combinacionIngresada, game.hits);
+                game.updateHistorial(combinacionIngresada, game.hits);
         
                 if (!game.win) {
                     game.mov_restantes -= 1;
                 }
-            } while (!gameEnd()); // nor, si las dos son falsas repite bucle
-            printMessageEndGame();        
+            } while (!game.gameEnd()); // nor, si las dos son falsas repite bucle
+            game.printMessageEndGame();        
         }
-
-    }
-    return game;
-
-    function getCombinacion(){
-        let vaildCombination;
-                
-        do{                     
-            vaildCombination = false;
-            let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
-            game.inputCombination = entrada.split(' ');
-
-            let nColoresValid = 0;
-            for(let i = 0; i < game.inputCombination.length; i++){
-                let colorValido = false;
-                for (let j = 0; j < game.validColors.length && !colorValido ; j++){
-                    if(game.inputCombination[i] === game.validColors[j]){
-                        colorValido = true;
-                    }
-                }
-                if(colorValido){
-                    nColoresValid += 1;
-                }
-            }
-
-            const nColors = 5;
-            if(nColoresValid == nColors){
-                vaildCombination = true;
-            } 
-        }while(!vaildCombination)
-        return game.inputCombination;
-    }
-
-    function updateHistorial(InputCombination, aciertos){
-        game.combinacionesPropuestas.push(InputCombination);
-        game.hits.push(aciertos)
-        console.log(InputCombination + " -- " + aciertos );
-    }
-
-    function gameEnd(){
-        return game.win || game.mov_restantes <= 0;  
-    }
-
-    function printMessageEndGame(){
-        game.win ? console.log("ENORABUENA EL JUGAODR HA GANADO"):
-                 console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
     }
 }
 
 function createApp(){
     let app = {
         game: createGame(),
-        start: function(){
+        playAgain: function(){
+            let aswerd;
+            let isAnswerdValid;
+            do{
+                aswerd = prompt('Quieres jugar otra partida (SI/NO): ');
+                isAnswerdValid = aswerd === 'SI' || aswerd === 'NO';
+                if (!isAnswerdValid){
+                    console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
+                }
+            }while(!isAnswerdValid)
+        
+            return aswerd === 'SI';
+        } 
+    }
+
+    return{
+       start: function(){
             do{
                 app.game.init();
-            }while(playAgain())    
+            }while(app.playAgain())    
             console.log("PROGRAMA END"); 
-        }
-    }
-    return app;
-
-    function playAgain(){
-        let aswerd;
-        let isAnswerdValid;
-        do{
-            aswerd = prompt('Quieres jugar otra partida (SI/NO): ');
-            isAnswerdValid = aswerd === 'SI' || aswerd === 'NO';
-            if (!isAnswerdValid){
-                console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
-            }
-        }while(!isAnswerdValid)
-     
-        return aswerd === 'SI';
-    }        
+        } 
+    }      
 }
 
 let app = createApp();
