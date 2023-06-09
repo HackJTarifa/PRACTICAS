@@ -3,7 +3,7 @@
 class Game{
     constructor(){
         this.mov_restantes;
-        this.validColors = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"]; 
+        this.VALID_COLORS = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"]; 
         this.combinacionesPropuestas = [];
         this.aciertos = [];
         this.win = false;
@@ -16,12 +16,11 @@ class Game{
         this.combinacionGanadora = this.getWinCombination();
         this.playerMode = this.getTypesPlayers();
 
-        //const combinacionIngresada;
         do {
-            const combinacionIngresada = this.getCombinacionWithFunctionby(this.playerMode, this.validColors);
-            this.aciertos = this.checkCombinacion(combinacionIngresada, this.combinacionGanadora);
+            const inputCombination = this.getCombinacionWithFunctionby(this.playerMode, this.VALID_COLORS);
+            this.aciertos = this.checkCombinacion(inputCombination, this.combinacionGanadora);
             this.win = this.playerWin(this.aciertos);
-            this.updateHistorial(combinacionIngresada, this.aciertos);
+            this.updateHistorial(inputCombination, this.aciertos);
     
             if (!this.win) {
                 this.mov_restantes -= 1;
@@ -49,10 +48,7 @@ class Game{
                 nColoresAcertados += 1;
             }
         }
-        if (nColoresAcertados == 5) {
-            return true;
-        }
-        return false;
+        return nColoresAcertados == 5;
     }
 
     getCombinacionWithFunctionby(playerType, validColors){
@@ -103,19 +99,18 @@ class Game{
     }
 
     getCombinacion(){
-        //let inputCombination;
-        let combinacion_valida;
+        let validCombination;
                 
         do{                     
-            combinacion_valida = false;
+            validCombination = false;
             let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
             this.inputCombination = entrada.split(' ');
 
             let nColoresValidos = 0;
             for(let i = 0; i < this.inputCombination.length; i++){
                 let colorValido = false;
-                for (let j = 0; j < this.validColors.length && !colorValido ; j++){
-                    if(this.inputCombination[i] === this.validColors[j]){
+                for (let j = 0; j < this.VALID_COLORS.length && !colorValido ; j++){
+                    if(this.inputCombination[i] === this.VALID_COLORS[j]){
                         colorValido = true;
                     }
                 }
@@ -125,10 +120,8 @@ class Game{
             }
 
             const N_COLORS = 5;
-            if(nColoresValidos == N_COLORS){
-                combinacion_valida = true;
-            } 
-        }while(!combinacion_valida)
+            validCombination = nColoresValidos === N_COLORS;            
+        }while(!validCombination)
         return this.inputCombination;
     }
 
@@ -136,14 +129,14 @@ class Game{
         let winCombination = [];
         do{
             let repetido = false;
-            const index = Math.floor(Math.random() * this.validColors.length);
+            const index = Math.floor(Math.random() * this.VALID_COLORS.length);
             for(let i = 0; i < winCombination.length; i++){
-                if(winCombination[i] === this.validColors[index]){
+                if(winCombination[i] === this.VALID_COLORS[index]){
                     repetido = true;
                 }
             }
             if(!repetido){
-                winCombination.push(this.validColors[index]);
+                winCombination.push(this.VALID_COLORS[index]);
             }
         }while(winCombination.length < 5)
 
@@ -176,20 +169,13 @@ class Game{
     }
 
     gameEnd(){
-        if(this.win){
-            return true;
-        }else if(this.mov_restantes <= 0){
-            return true;
-        }
-        return false;
+        return this.win || this.mov_restantes <= 0;
     }
 
     printMessageEndGame(){
-        if (this.win){
-            console.log("ENORABUENA EL JUGAODR HA GANADO");
-        }else{
-            console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");
-        } 
+        this.win?
+            console.log("ENORABUENA EL JUGAODR HA GANADO"):
+            console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
     }
 }
 
@@ -209,19 +195,15 @@ class App{
         let respuesta;
         let isAnswerdValid;
         do{
-            respuesta = prompt('Quieres jugar otra partida: ');
+            respuesta = prompt('Quieres jugar otra partida (SI/NO): ');
             isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
             if (!isAnswerdValid){
                 console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
     
-        if (respuesta === 'SI'){
-            return true;
-        }
-        return false; 
+        return respuesta === 'SI';
     }
-
 }
 
 let app = new App()

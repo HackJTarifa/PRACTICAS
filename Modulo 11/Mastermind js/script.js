@@ -35,10 +35,7 @@ class Game{
                 nColoresAcertados += 1;
             }
         }
-        if (nColoresAcertados == 5) {
-            return true;
-        }
-        return false;
+        return nColoresAcertados == 5;
     }
 
     getCombinacion(){

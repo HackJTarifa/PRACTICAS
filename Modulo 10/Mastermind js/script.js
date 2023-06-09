@@ -1,4 +1,6 @@
 
+
+
 function createBoard(){
     let board = {
         validColors: ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"],
@@ -110,9 +112,7 @@ function createGame(){
 
     return{
         init: function(){
-            // game.combinacionGanadora = getWinCombination();
             game.board.createWinCombination();
-            //const combinacionIngresada;
             do {
                 const combinacionIngresada = game.getCombinacion();
                 game.hits = game.board.checkCombinacionHits(combinacionIngresada, game.board.winCombination);
@@ -155,6 +155,8 @@ function createApp(){
         } 
     }      
 }
+
+
 
 let app = createApp();
 app.start();

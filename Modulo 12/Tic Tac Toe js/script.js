@@ -17,17 +17,14 @@ class App{
         let respuesta;
         let isAnswerdValid;
         do{
-            respuesta = prompt('Quieres jugar otra partida: ');
+            respuesta = prompt('Quieres jugar otra partida (SI/NO): ');
             isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
             if (!isAnswerdValid){
                 console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
     
-        if (respuesta === 'SI'){
-            return true;
-        }
-        return false; 
+        return respuesta === 'SI';
     }
 }
 
@@ -38,15 +35,15 @@ class Game{
     
         this.player = 0;
         this.mov_restantes;
-        this.tablero;// = new Tablero(3, 3);
+        this.board;// = new Tablero(3, 3);
         this.win;    
     }
 
     init(){
         this.mov_restantes = 9;
-        this.tablero = new Tablero(3, 3);
+        this.board = new Board(3, 3);
         this.playerMode = this.getTypesPlayers();
-        this.tablero.print();
+        this.board.print();
         
         do {
             this.tirada(this.playerMode[this.player]);
@@ -59,19 +56,14 @@ class Game{
     }
 
     gameEnd(){
-        if(this.win){
-            return true;
-        }else if(this.mov_restantes <= 0){
-            return true;
-        }
-        return false;
+        return this.win || this.mov_restantes <= 0;
     }
 
     tirada(playerType) {
-        let [file, column] = this.getColumWithFunctionby(this.tablero, playerType);
+        let [file, column] = this.getColumWithFunctionby(this.board, playerType);
 
-        this.tablero.update(file, column, this.TOKENSTATE[this.player]);
-        this.tablero.print();
+        this.board.update(file, column, this.TOKENSTATE[this.player]);
+        this.board.print();
     
         this.win = this.playerWin();
         console.log("TIRADA END")
@@ -134,14 +126,14 @@ class Game{
     }
 
     playerWin(){
-        if(this.tablero.getPosition(0, 0) ==  this.TOKENSTATE[this.player] && this.tablero.getPosition(0,1) == this.TOKENSTATE[this.player] && this.tablero.getPosition(0,2) == this.TOKENSTATE[this.player] ||
-            this.tablero.getPosition(1, 0) == this.TOKENSTATE[this.player] && this.tablero.getPosition(1,1) == this.TOKENSTATE[this.player] && this.tablero.getPosition(1,2) == this.TOKENSTATE[this.player] ||
-            this.tablero.getPosition(2, 0) == this.TOKENSTATE[this.player] && this.tablero.getPosition(2,1) == this.TOKENSTATE[this.player] && this.tablero.getPosition(2,2) == this.TOKENSTATE[this.player] ||
-            this.tablero.getPosition(0, 0) == this.TOKENSTATE[this.player] && this.tablero.getPosition(1,0) == this.TOKENSTATE[this.player] && this.tablero.getPosition(2,0) == this.TOKENSTATE[this.player] ||
-            this.tablero.getPosition(0, 1) == this.TOKENSTATE[this.player] && this.tablero.getPosition(1,1) == this.TOKENSTATE[this.player] && this.tablero.getPosition(2,1) == this.TOKENSTATE[this.player] ||
-            this.tablero.getPosition(0, 2) == this.TOKENSTATE[this.player] && this.tablero.getPosition(1,2) == this.TOKENSTATE[this.player] && this.tablero.getPosition(2,2) == this.TOKENSTATE[this.player] ||
-            this.tablero.getPosition(0, 0) == this.TOKENSTATE[this.player] && this.tablero.getPosition(1,1) == this.TOKENSTATE[this.player] && this.tablero.getPosition(2,2) == this.TOKENSTATE[this.player] ||
-            this.tablero.getPosition(2, 0) == this.TOKENSTATE[this.player] && this.tablero.getPosition(1,1) == this.TOKENSTATE[this.player] && this.tablero.getPosition(0,2) == this.TOKENSTATE[this.player]){
+        if(this.board.getPosition(0, 0) ==  this.TOKENSTATE[this.player] && this.board.getPosition(0,1) == this.TOKENSTATE[this.player] && this.board.getPosition(0,2) == this.TOKENSTATE[this.player] ||
+            this.board.getPosition(1, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(1,1) == this.TOKENSTATE[this.player] && this.board.getPosition(1,2) == this.TOKENSTATE[this.player] ||
+            this.board.getPosition(2, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(2,1) == this.TOKENSTATE[this.player] && this.board.getPosition(2,2) == this.TOKENSTATE[this.player] ||
+            this.board.getPosition(0, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(1,0) == this.TOKENSTATE[this.player] && this.board.getPosition(2,0) == this.TOKENSTATE[this.player] ||
+            this.board.getPosition(0, 1) == this.TOKENSTATE[this.player] && this.board.getPosition(1,1) == this.TOKENSTATE[this.player] && this.board.getPosition(2,1) == this.TOKENSTATE[this.player] ||
+            this.board.getPosition(0, 2) == this.TOKENSTATE[this.player] && this.board.getPosition(1,2) == this.TOKENSTATE[this.player] && this.board.getPosition(2,2) == this.TOKENSTATE[this.player] ||
+            this.board.getPosition(0, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(1,1) == this.TOKENSTATE[this.player] && this.board.getPosition(2,2) == this.TOKENSTATE[this.player] ||
+            this.board.getPosition(2, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(1,1) == this.TOKENSTATE[this.player] && this.board.getPosition(0,2) == this.TOKENSTATE[this.player]){
             return true;
             }
         return false;
@@ -157,17 +149,18 @@ class Game{
         }while(!isAnswerdValid)
 
 
-        const playTypes = [[playerTypes[0], playerTypes[0]], [playerTypes[0], playerTypes[1]], [playerTypes[1], playerTypes[1]]];
-        return playTypes[answerd - 1]
-        }
+        const playTypes = [[playerTypes[0], playerTypes[0]],
+                           [playerTypes[0], playerTypes[1]],
+                           [playerTypes[1], playerTypes[1]]];
+        return playTypes[answerd - 1];        
     }
 
-    getFileColumn() {
+    getFileColumn(){
         let file, column;
         do {
             file = this.getPosition("FILE");
             column = this.getPosition("COLUMN");
-        } while (!this.tablero.isPosititionValid(file, column));
+        } while (!this.board.isPosititionValid(file, column));
         console.log("SE HA ELEGIDO LA FILA: " + file);
         console.log("SE HA ELEGIDO LA COLUMNA: " + column);
         return { file, column };
@@ -182,19 +175,16 @@ class Game{
 
     printMessageEndGame(){
         const players = ["PLAYER 1", "PLAYER 2"];
-        if (this.win){
-            console.log("ENORABUENA EL JUGADOR: " + players[this.player] + " HA GANADO");
-        }else{
-            console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");
-        }
+        this.win ?  console.log("ENORABUENA EL JUGADOR: " + players[this.player] + " HA GANADO"):
+                    console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
     }
 }
 
-class Tablero{
+class Board{
     constructor(files, columns){
         this.files = files;
         this.columns = columns;
-        this.tablero = this.inicializeTablero(this.files, this.columns);
+        this.board = this.inicializeTablero(this.files, this.columns);
     }
 
     getFilesLength(){
@@ -206,21 +196,19 @@ class Tablero{
     }
 
     inicializeTablero(files, columns){
-        let tablero = new Array(files);
+        const initialValue = "0";
+        let board = [];
         for(let i = 0; i < files; i++){
-            tablero[i] = new Array(columns);
-        }
-    
-        for(let i = 0; i < files; i++){             
+            board[i] = [];
             for (let j = 0; j < columns; j++){
-                tablero[i][j] = "0";
+                board[i][j] = initialValue;
             }
-        }         
-        return tablero;
+        }       
+        return board;
     }
 
     update(file, column, token){
-        this.tablero[file][column] = token;
+        this.board[file][column] = token;
     }
 
     isPosititionValid(file, column){
@@ -233,7 +221,7 @@ class Tablero{
     }
 
     getPosition(file, column){
-        return this.tablero[file][column];
+        return this.board[file][column];
     }
 
     existPosition(file, column){
@@ -256,7 +244,7 @@ class Tablero{
     }
 
     isEmpy(file, column){
-        if(this.tablero[file][column] === "0"){
+        if(this.board[file][column] === "0"){
             return true;
         }
         console.log("LA POSICION ELEGIDA NO ES VALIDA POR QUE YA ESTA OCUPADA");
@@ -264,9 +252,9 @@ class Tablero{
     }
 
     print(){
-        console.log(this.tablero[0]);
-        console.log(this.tablero[1]);
-        console.log(this.tablero[2]);
+        console.log(this.board[0]);
+        console.log(this.board[1]);
+        console.log(this.board[2]);
     }
 
 }

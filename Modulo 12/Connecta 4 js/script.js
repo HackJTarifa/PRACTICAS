@@ -1,8 +1,8 @@
-class Tablero{
+class Board{
     constructor(files, columns, tokenState){
         this.files = files;
         this.column = columns;
-        this.tablero = this.inicializeTablero(this.files, this.column);
+        this.board = this.inicializeBoard(this.files, this.column);
         this.movRestantes = this.files * this.column;
         this.tokenState = tokenState;
     }
@@ -11,27 +11,25 @@ class Tablero{
         return this.movRestantes;
     }
 
-    inicializeTablero(FILES, COLUMNS){    
-        let tablero = new Array(COLUMNS);
+    inicializeBoard(FILES, COLUMNS){    
+        const intialValue = "0";
+        let board = [];
         for(let i = 0; i < COLUMNS; i++){
-            tablero[i] = new Array(FILES);
-        }
-    
-        for(let i = 0; i < tablero.length; i++){             
+            board[i] =[];
             for (let j = 0; j < FILES; j++){
-                tablero[i][j] = "0";
+                board[i][j] = intialValue;
             }
-        } 
-         return tablero;
+        }    
+        return board;
     }
 
     gePosition(file, column){
-        return this.tablero[column][file];
+        return this.board[column][file];
     }
 
     isPositionValid(COLUMN){
         for(let i = 0; i < this.files; i++){ 
-            if(this.tablero[COLUMN][i] == "0"){
+            if(this.board[COLUMN][i] == "0"){
                 return true;
             }
         }
@@ -50,16 +48,16 @@ class Tablero{
 
     update(column, tokenState){
         let index = 0;
-        while(this.isOccupied(this.tablero[column][index])){
+        while(this.isOccupied(this.board[column][index])){
             index += 1;
         }    
-        this.tablero[column][index] = tokenState;
+        this.board[column][index] = tokenState;
         this.movRestantes -= 1;
     }
 
     print(){
         for(let i = 0; i < this.column; i++){
-            console.log(this.tablero[i]);
+            console.log(this.board[i]);
         }
         console.log(" ");
     }
@@ -74,19 +72,19 @@ class Game{
         this.player = 0;
 
         this.win = false;
-        this.tablero;
+        this.board;
     }
 
     init(){
-        this.tablero = new Tablero(this.FILES, this.COLUMNS, this.TOKEN_STATE);
+        this.board = new Board(this.FILES, this.COLUMNS, this.TOKEN_STATE);
         this. playerMode = this.getTypesPlayers();
 
         do {
             let column;
             do {                
                 column = this.getColumWithFunctionby(this.playerMode[this.player]);                
-            } while (!this.tablero.isPositionValid(column));
-            this.tablero.update(column, this.TOKEN_STATE[this.player]);
+            } while (!this.board.isPositionValid(column));
+            this.board.update(column, this.TOKEN_STATE[this.player]);
             this.printTablero();
 
             this.win = this.playerWin();
@@ -100,15 +98,15 @@ class Game{
 
     getTypesPlayers(){
         const playerTypes = ["JUGADOR", "MAQUINA"];
-        let answerd;
+        let answer;
         let isAnswerdValid;
         do{
-            answerd = parseInt(prompt('JUGADOR VS JUGADOR ELIGE :1 \nJUGADOR VS MAQUINA ELIGE: 2 \nMAQUINA VS MAQUINA: ELIGE : 3'));
-            isAnswerdValid = answerd === 1 || answerd === 2 || answerd === 3;
+            answer = parseInt(prompt('JUGADOR VS JUGADOR ELIGE :1 \nJUGADOR VS MAQUINA ELIGE: 2 \nMAQUINA VS MAQUINA: ELIGE : 3'));
+            isAnswerdValid = answer === 1 || answer === 2 || answer === 3;
         }while(!isAnswerdValid)
 
         const playModes = [[playerTypes[0], playerTypes[0]], [playerTypes[0], playerTypes[1]], [playerTypes[1], playerTypes[1]]];
-        return playModes[answerd - 1];
+        return playModes[answer - 1];
     }
 
     getColumWithFunctionby(playerType){
@@ -159,22 +157,34 @@ class Game{
     // iC = indexColumns
     // iF = indexFiles
     // tS = tokenState
-    checkPosition(iC, iF, tK) {
+    checkPosition(col, row, token) {
         const CONNECTA_SIZE = 4;
-        if(CONNECTA_SIZE + iC < 7){                     
-            if (this.tablero.gePosition(iC, iF) == tK && this.tablero.gePosition(iC + 1, iF) == tK && this.tablero.gePosition(iC + 2, iF) == tK && this.tablero.gePosition(iC + 3, iF) == tK){
+        if(CONNECTA_SIZE + col < 7){                     
+            if (this.board.gePosition(col, row) == token && 
+            this.board.gePosition(col + 1, row) == token && 
+            this.board.gePosition(col + 2, row) == token && 
+            this.board.gePosition(col + 3, row) == token){
                 return true;
             }
         }                 
-        if(CONNECTA_SIZE + iF < 6){
-            if(this.tablero.gePosition(iC, iF) == tK && this.tablero.gePosition(iC, iF + 1) == tK && this.tablero.gePosition(iC, iF + 2) == tK && this.tablero.gePosition(iC, iF + 3) == tK){
+        if(CONNECTA_SIZE + row < 6){
+            if(this.board.gePosition(col, row) == token && 
+            this.board.gePosition(col, row + 1) == token && 
+            this.board.gePosition(col, row + 2) == token && 
+            this.board.gePosition(col, row + 3) == token){
                 console.log("CUARTRO EN RAYA");
                 return true;
             }
         }
-        if(CONNECTA_SIZE + iC < 7 && CONNECTA_SIZE + iF < 6){
-            if(this.tablero.gePosition(iC, iF) == tK && this.tablero.gePosition(iC + 1, iF + 1) == tK && this.tablero.gePosition(iC + 2, iF + 2) == tK && this.tablero.gePosition(iC + 3, iF + 3) == tK ||
-            this.tablero.gePosition(iC, iF + 3) == tK && this.tablero.gePosition(iC + 1, iF + 2) == tK && this.tablero.gePosition(iC + 2, iF + 1) == tK && this.tablero.gePosition(iC + 3, iF) == tK) {
+        if(CONNECTA_SIZE + col < 7 && CONNECTA_SIZE + row < 6){
+            if(this.board.gePosition(col, row) == token && 
+            this.board.gePosition(col + 1, row + 1) == token && 
+            this.board.gePosition(col + 2, row + 2) == token && 
+            this.board.gePosition(col + 3, row + 3) == token ||
+            this.board.gePosition(col, row + 3) == token && 
+            this.board.gePosition(col + 1, row + 2) == token && 
+            this.board.gePosition(col + 2, row + 1) == token && 
+            this.board.gePosition(col + 3, row) == token) {
                 return true;
             }
         }
@@ -182,16 +192,11 @@ class Game{
     }
 
     gameEnd() {
-        if(this.win){
-            return true
-        }else if(this.tablero.get_mov_restantes() <= 0){
-            return true;
-        } 
-        return false;
+        return this.win || this.movRestantes <= 0;
     }
 
     printTablero(){
-        this.tablero.print();
+        this.board.print();
     }
 
     getColumn(){
@@ -234,17 +239,14 @@ class App{
         let respuesta;
         let isAnswerdValid;
         do{
-            respuesta = prompt('Quieres jugar otra partida: ');
+            respuesta = prompt('Quieres jugar otra partida (SI/NO): ');
             isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
             if (!isAnswerdValid){
                 console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
     
-        if (respuesta === 'SI'){
-            return true;
-        }
-        return false; 
+        return respuesta === 'SI'; 
     }
 }
 
