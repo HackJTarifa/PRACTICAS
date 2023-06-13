@@ -66,17 +66,16 @@ class Board{
 class Game{
     constructor(){
         this.N_PLAYERS = 2;
-        this.TOKEN_STATE = ['RED', 'YELLOW']; 
+        this.TOKEN_STATES = ['RED', 'YELLOW']; 
         this.COLUMNS = 7;
         this.FILES = 6;
         this.player = 0;
-
         this.win = false;
         this.board;
     }
 
     init(){
-        this.board = new Board(this.FILES, this.COLUMNS, this.TOKEN_STATE);
+        this.board = new Board(this.FILES, this.COLUMNS, this.TOKEN_STATES);
         this. playerMode = this.getTypesPlayers();
 
         do {
@@ -84,7 +83,7 @@ class Game{
             do {                
                 column = this.getColumWithFunctionby(this.playerMode[this.player]);                
             } while (!this.board.isPositionValid(column));
-            this.board.update(column, this.TOKEN_STATE[this.player]);
+            this.board.update(column, this.TOKEN_STATES[this.player]);
             this.printTablero();
 
             this.win = this.playerWin();
@@ -92,7 +91,7 @@ class Game{
                 this.player = (this.player + 1) % this.N_PLAYERS;
             }
 
-        } while (!this.gameEnd()); // nor, si las dos son falsas repite bucle
+        } while (!this.gameEnd()); 
         this.printMessageEndGame();
     }
 
@@ -126,9 +125,9 @@ class Game{
                                 column -= 1;
                             }while(incorrectColumn) 
                             return column;
-                         } 
+                        } 
         , "MAQUINA": function getRandomColumn(){
-                            // 0, 1, 2, 3, 4, 5, 6
+                            // 0...6
                             const MAX_COLUMN = 7;
                             return Math.floor(Math.random() * MAX_COLUMN);
                         }
@@ -139,7 +138,7 @@ class Game{
     }
 
     playerWin(){
-        let tokenState = this.TOKEN_STATE[this.player];
+        let tokenState = this.TOKEN_STATES[this.player];
         console.log(tokenState);        
 
         let cuantroEnRaya = false;
@@ -153,10 +152,7 @@ class Game{
         }
         return false;
     }
-    
-    // iC = indexColumns
-    // iF = indexFiles
-    // tS = tokenState
+
     checkPosition(col, row, token) {
         const CONNECTA_SIZE = 4;
         if(CONNECTA_SIZE + col < 7){                     
@@ -202,10 +198,10 @@ class Game{
     getColumn(){
         let column;
         do{ 
-            column = parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));
+            column = parseInt(prompt("Agrega una posicion valida del tablero, columna 1...7"));
             column -= 1;
-       }while(!(column >= 0 && column < 7))        
-       return column;
+        }while(!(column >= 0 && column < 7))        
+        return column;
     }
 
     getRandomColumn(){

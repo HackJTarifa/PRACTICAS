@@ -1,5 +1,4 @@
 
-// ------------------- START PROGRAMA -------------------
 
 class App{
     constructor(){
@@ -10,21 +9,21 @@ class App{
         do{
             this.game.init();
         }while(this.playAgain())    
-        console.log("PROGRAMM END");    
+        console.log("PROGRAM END");    
     }
 
     playAgain(){
-        let respuesta;
+        let answer;
         let isAnswerdValid;
         do{
-            respuesta = prompt('Quieres jugar otra partida (SI/NO): ');
-            isAnswerdValid = respuesta === 'SI' || respuesta === 'NO';
+            answer = prompt('Quieres jugar otra partida (SI/NO): ');
+            isAnswerdValid = answer === 'SI' || answer === 'NO';
             if (!isAnswerdValid){
                 console.log("LA RESPUESTA NO ES VALIDA, SOLO SE ACEPTA SI O NO EN MAYUSCULAS");
             }
         }while(!isAnswerdValid)
     
-        return respuesta === 'SI';
+        return answer === 'SI';
     }
 }
 
@@ -74,50 +73,58 @@ class Game{
             "JUGADOR": function getFileColumn(tablero) {
                             let file, column;
                             do {
-                                file = getPosition("FILE");
+                                file = getPosition("ROW");
                                 column = getPosition("COLUMN");
                             } while (!isPosititionValid(tablero, file, column));
                             return [file, column];
                                                 
                             function isPosititionValid(tablero, file, column){
-                                //console.log(tablero[file][column]);
                                 if(tablero.getPosition(file, column) === "0"){
                                     return true;
                                 }
                                 return false;
                             }                
                                             
-                            function getPosition(fileOColumn){
+                            function getPosition(fileOrColumn){
                                 let fileColumn;
-                                let incorrectPosition;
                                 do{ 
                                     incorrectPosition = true;         
-                                    fileColumn = parseInt(prompt("Agrega una posicion valida del tablero " + fileOColumn + " 1-2-3"));
-                                    if(0 < fileColumn && fileColumn < 4){
-                                        incorrectPosition = false; 
-                                    }
-                                }while(incorrectPosition)   
+                                    fileColumn = parseInt(prompt("Agrega una posicion valida del tablero " + fileOrColumn + " 1-2-3"));
+                                } while (!isValidPosition(fileColumn));  
                                                 
                                 const OFFSET = 1;
                                 return fileColumn - OFFSET;
                             }
+
+                            function isValidPosition(position){
+                                const MIN_POSITION = 1;
+                                const MAX_POSITION = 3;
+
+                                if (isNaN(position)) {
+                                    console.log("La posición ingresada no es válida. Por favor, ingresa un número.");
+                                    return false;
+                                }
+
+                                if (position < MIN_POSITION || position > MAX_POSITION) {
+                                    console.log("La posición está fuera del rango válido (1-3). Por favor, ingresa un valor válido.");
+                                    return false;
+                                }                                    
+                                return true;        
+                            }
                         }              
         , "MAQUINA": function getRandomPosition(tablero){ 
-                        let validFile = [];
-                        let validColumn = [];
+                        let validPosition = [];
                         for(let i = 0; i < tablero.getFilesLength(); i++){             
                             for (let j = 0; j < tablero.getColumnsLength(); j++){
                                 if (tablero.getPosition(i, j) === '0'){
-                                    validFile.push(i); 
-                                    validColumn.push(j);  
+                                    validPosition.push({row: i, column: j});
                                 }
                             }
                         }
-                        console.log(validFile);
-                        const position = Math.floor(Math.random() * validFile.length);   
-                        console.log(validFile[position] + " " + validColumn[position]);
-                        return [validFile[position], validColumn[position]];
-                     }
+                        const randomIndex = Math.floor(Math.random() * validFile.length);   
+                        const { file, column } = validPosition[randomIndex];
+                        return [file, column];
+                    }
         }
 
         let getTirada = functionPlayerType[playerType]; 
@@ -150,8 +157,8 @@ class Game{
 
 
         const playTypes = [[playerTypes[0], playerTypes[0]],
-                           [playerTypes[0], playerTypes[1]],
-                           [playerTypes[1], playerTypes[1]]];
+                            [playerTypes[0], playerTypes[1]],
+                            [playerTypes[1], playerTypes[1]]];
         return playTypes[answerd - 1];        
     }
 
@@ -256,7 +263,6 @@ class Board{
         console.log(this.board[1]);
         console.log(this.board[2]);
     }
-
 }
 
 let app = new App();

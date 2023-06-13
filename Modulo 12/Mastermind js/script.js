@@ -88,7 +88,6 @@ class Game{
                                             for(let i = 0; i < N_COLORS; i++){
                                                 const validColorsRandomIndex = Math.floor(Math.random() * validColors.length);
                                                 colorsRandomTirada.push(validColors[validColorsRandomIndex]);
-
                                             }
                                             return colorsRandomTirada;
                                         }
