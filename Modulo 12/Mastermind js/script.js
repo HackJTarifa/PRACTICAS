@@ -1,26 +1,121 @@
 
+class WinningCombinationManager{
+    constructor(){
+        this.VALID_COLORS = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"]; 
+        this.winCombination = [];
+    }
+
+    getValidColors(){
+        return this.VALID_COLORS;
+    }
+
+    generateCombination(){
+        let winCombination = [];
+        do{
+            let repetido = false;
+            const index = Math.floor(Math.random() * this.VALID_COLORS.length);
+            for(let i = 0; i < winCombination.length; i++){
+                if(winCombination[i] === this.VALID_COLORS[index]){
+                    repetido = true;
+                }
+            }
+            if(!repetido){
+                winCombination.push(this.VALID_COLORS[index]);
+            }
+        }while(winCombination.length < 5)
+        this.winCombination = winCombination;
+        this.printCombination();
+    }
+
+    isWinningCombination(combination){
+        if(!this.areArraysSameLength(combination)){
+            return false;
+        }
+
+        for(let i = 0; i < this.winCombination.length; i++){
+            if(combination[i] !== this.winCombination[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    areArraysSameLength(combination){
+        return combination.length === this.winCombination;
+    }
+
+
+    isValidCombination(combination){
+        if(!areArraysSameLength(combination)){
+            return false;
+        }
+
+        for(let i = 0; i < combination.length; i++){
+            let validColor = false;
+            for (let j = 0; j < this.VALID_COLORS.length && !validColor ; j++){
+                if(combination[i] === this.VALID_COLORS[j]){
+                    validColor = true;
+                }
+            }
+            if(!validColor){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    checkCombinacionColorStatus(combination){
+            let supportCombination = [];
+            for(let i = 0; i < combination.length; i++){
+                if(combination[i] === this.winCombination[i]){
+                    supportCombination[i] = "BLANCO";
+                }else if(this.isColorImArray(combination[i])){
+                    supportCombination[i] = "NEGRO";
+                }else{
+                    supportCombination[i] = "VACIO";
+                }                
+            }
+            return supportCombination;        
+    }
+
+    isColorImArray(color){
+        for(let i = 0; i < this.winCombination.length; i++){
+            if(this.winCombination[i] === color){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    printCombination(){
+        console.log(this.winCombination[0] + " " + 
+                    this.winCombination[1] + " " + 
+                    this.winCombination[2] + " " + 
+                    this.winCombination[3] + " " + 
+                    this.winCombination[4]);
+    }
+}
 
 class Game{
     constructor(){
         this.mov_restantes;
-        this.VALID_COLORS = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"]; 
         this.combinacionesPropuestas = [];
-        this.aciertos = [];
+        this.combinationColorStatus = [];
         this.win = false;
         this.inputCombination;
-        this.combinacionGanadora;
+        this.winCombinationManager = new WinningCombinationManager();
     }
 
     init(){
         this.mov_restantes = 15;
-        this.combinacionGanadora = this.getWinCombination();
+        this.winCombinationManager.generateCombination();
         this.playerMode = this.getTypesPlayers();
 
         do {
-            const inputCombination = this.getCombinacionWithFunctionby(this.playerMode, this.VALID_COLORS);
-            this.aciertos = this.checkCombinacion(inputCombination, this.combinacionGanadora);
-            this.win = this.playerWin(this.aciertos);
-            this.updateHistorial(inputCombination, this.aciertos);
+            const inputCombination = this.getCombinacionWithFunctionby(this.playerMode, this.winCombinationManager.getValidColors());
+            this.combinationColorStatus = this.winCombinationManager.checkCombinacionColorStatus(inputCombination);
+            this.win = this.winCombinationManager.isWinningCombination(inputCombination);
+            this.updateHistorial(inputCombination, this.combinationColorStatus);
     
             if (!this.win) {
                 this.mov_restantes -= 1;
@@ -39,16 +134,6 @@ class Game{
         }while(!isAnswerdValid)
 
         return playerTypes[answerd - 1];
-    }
-
-    playerWin(aciertos){
-        let nColoresAcertados = 0;
-        for(let i = 0; i < aciertos.length; i++){
-            if(aciertos[i] === "BLANCO"){
-                nColoresAcertados += 1;
-            }
-        }
-        return nColoresAcertados == 5;
     }
 
     getCombinacionWithFunctionby(playerType, validColors){
@@ -97,73 +182,9 @@ class Game{
         return getCombination(validColors);
     }
 
-    getCombinacion(){
-        let validCombination;
-                
-        do{                     
-            validCombination = false;
-            let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
-            this.inputCombination = entrada.split(' ');
-
-            let nColoresValidos = 0;
-            for(let i = 0; i < this.inputCombination.length; i++){
-                let colorValido = false;
-                for (let j = 0; j < this.VALID_COLORS.length && !colorValido ; j++){
-                    if(this.inputCombination[i] === this.VALID_COLORS[j]){
-                        colorValido = true;
-                    }
-                }
-                if(colorValido){
-                    nColoresValidos += 1;
-                }
-            }
-
-            const N_COLORS = 5;
-            validCombination = nColoresValidos === N_COLORS;            
-        }while(!validCombination)
-        return this.inputCombination;
-    }
-
-    getWinCombination(){
-        let winCombination = [];
-        do{
-            let repetido = false;
-            const index = Math.floor(Math.random() * this.VALID_COLORS.length);
-            for(let i = 0; i < winCombination.length; i++){
-                if(winCombination[i] === this.VALID_COLORS[index]){
-                    repetido = true;
-                }
-            }
-            if(!repetido){
-                winCombination.push(this.VALID_COLORS[index]);
-            }
-        }while(winCombination.length < 5)
-
-        console.log(winCombination[0] + " " + winCombination[1] + " " + winCombination[2] + " " + winCombination[3] + " " + winCombination[4]);
-        return winCombination;
-    }
-
-    checkCombinacion(InputCombination, combinacionGanadora){
-        let supportCombination = ["VACIO", "VACIO", "VACIO", "VACIO", "VACIO"];
-        for(let i = 0; i < InputCombination.length; i++){
-            if(InputCombination[i] === combinacionGanadora[i]){
-                supportCombination[i] = "BLANCO";
-            }else{
-                let encontrado = false;
-                for(let j = 0; j < combinacionGanadora.length && !encontrado; j++){
-                    if(InputCombination[i] === combinacionGanadora[j]){
-                        supportCombination[i] = "NEGRO";
-                        encontrado = true;
-                    }
-                }
-            }
-        }
-        return supportCombination;
-    }
-
     updateHistorial(InputCombination, aciertos){
         this.combinacionesPropuestas.push(InputCombination);
-        this.aciertos.push(aciertos)
+        this.combinationColorStatus.push(aciertos)
         console.log(InputCombination + " -- " + aciertos );
     }
 

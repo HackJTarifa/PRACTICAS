@@ -75,7 +75,7 @@ class Game{
     }
 
     init(){
-        this.board = new Board(this.FILES, this.COLUMNS, this.TOKEN_STATES);
+        this.board = new BoardConnecta4(this.FILES, this.COLUMNS, this.TOKEN_STATES);
         this. playerMode = this.getTypesPlayers();
 
         do {
@@ -221,7 +221,7 @@ class Game{
 
 class App{
     constructor(){
-        this.game = new Game();
+        this.game = new Connecta4();
     }
 
     start(){

@@ -2,7 +2,7 @@
 
 class App{
     constructor(){
-        this.game = new Game();
+        this.game = new GameTictactoe();
     }
 
     start(){
@@ -40,7 +40,7 @@ class Game{
 
     init(){
         this.mov_restantes = 9;
-        this.board = new Board(3, 3);
+        this.board = new BoardTictactoe(3, 3);
         this.playerMode = this.getTypesPlayers();
         this.board.print();
         

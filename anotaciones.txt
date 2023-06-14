@@ -1,7 +1,0 @@
-
-modulo 9 crear mastermind.
-modulo 9 crear connecta 4.
-modulo 9 crear tic tac toe.
-modulo 10 crear mastermaind.
-modulo 10 crear connecta 4. 
-modulo 10 crear tic tac toe
