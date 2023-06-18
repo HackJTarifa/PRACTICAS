@@ -1,61 +1,26 @@
 
-class Tictactoe{
-    constructor(){
-        this.TOKENSTATE = ['X', 'Y'];
-        this.NPLAYERS = 2;
-    
-        this.player = 0;
-        this.mov_restantes;
-        this.board;// = new Tablero(3, 3);
-        this.win;    
+class PlayerTictactoe{
+    constructor(token, player){
+        this.TOKEN = token
+        this.player = player        
     }
 
-    init(){
-        console.log(" INICIA EL JUEGO TIC TAC TOE ");
-        this.mov_restantes = 9;
-        this.board = new BoardTictactoe(3, 3);
-        this.playerMode = this.getTypesPlayers();
-        this.board.print();
-        
-        do {
-            this.tirada(this.playerMode[this.player]);
-            if (!this.win) {
-                this.player = (this.player + 1) % this.NPLAYERS;
-                this.mov_restantes -= 1;
-            }
-        }while(!this.gameEnd())
-        this.printMessageEndGame();
+    getToken() { 
+        return this.TOKEN;
     }
 
-    gameEnd(){
-        return this.win || this.mov_restantes <= 0;
-    }
-
-    tirada(playerType) {
-        let [file, column] = this.getColumWithFunctionby(this.board, playerType);
-
-        this.board.update(file, column, this.TOKENSTATE[this.player]);
-        this.board.print();
-    
-        this.win = this.playerWin();
-        console.log("TIRADA END")
-    }
-
-    getColumWithFunctionby(tablero, playerType){
+    getPlayerFunction(board){
         const functionPlayerType ={
-            "JUGADOR": function getFileColumn(tablero) {
+            "JUGADOR": function getFileColumn(board) {
                             let file, column;
                             do {
                                 file = getPosition("ROW");
                                 column = getPosition("COLUMN");
-                            } while (!isPosititionValid(tablero, file, column));
+                            } while (!isPosititionValid(board, file, column));
                             return [file, column];
                                                 
                             function isPosititionValid(tablero, file, column){
-                                if(tablero.getPosition(file, column) === "0"){
-                                    return true;
-                                }
-                                return false;
+                                return tablero.getPosition(file, column) === "0";                      
                             }                
                                             
                             function getPosition(fileOrColumn){
@@ -70,26 +35,14 @@ class Tictactoe{
                             }
 
                             function isValidPosition(position){
-                                const MIN_POSITION = 1;
-                                const MAX_POSITION = 3;
-
-                                if (isNaN(position)) {
-                                    console.log("La posición ingresada no es válida. Por favor, ingresa un número.");
-                                    return false;
-                                }
-
-                                if (position < MIN_POSITION || position > MAX_POSITION) {
-                                    console.log("La posición está fuera del rango válido (1-3). Por favor, ingresa un valor válido.");
-                                    return false;
-                                }                                    
-                                return true;        
+                                return board.existPosition(position);      
                             }
                         }              
-        , "MAQUINA": function getRandomPosition(tablero){ 
+        , "MAQUINA": function getRandomPosition(board){ 
                         let validPosition = [];
-                        for(let i = 0; i < tablero.getFilesLength(); i++){             
-                            for (let j = 0; j < tablero.getColumnsLength(); j++){
-                                if (tablero.getPosition(i, j) === '0'){
+                        for(let i = 0; i < board.getFilesLength(); i++){             
+                            for (let j = 0; j < board.getColumnsLength(); j++){
+                                if (board.getPosition(i, j) === '0'){
                                     validPosition.push({row: i, column: j});
                                 }
                             }
@@ -100,27 +53,113 @@ class Tictactoe{
                     }
         }
 
-        let getTirada = functionPlayerType[playerType]; 
-        let resultado = getTirada(tablero);
+        let getTirada = functionPlayerType[this.player]; 
+        let resultado = getTirada(board);
         return resultado;
     }
 
-    playerWin(){
-        if(this.board.getPosition(0, 0) ==  this.TOKENSTATE[this.player] && this.board.getPosition(0,1) == this.TOKENSTATE[this.player] && this.board.getPosition(0,2) == this.TOKENSTATE[this.player] ||
-            this.board.getPosition(1, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(1,1) == this.TOKENSTATE[this.player] && this.board.getPosition(1,2) == this.TOKENSTATE[this.player] ||
-            this.board.getPosition(2, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(2,1) == this.TOKENSTATE[this.player] && this.board.getPosition(2,2) == this.TOKENSTATE[this.player] ||
-            this.board.getPosition(0, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(1,0) == this.TOKENSTATE[this.player] && this.board.getPosition(2,0) == this.TOKENSTATE[this.player] ||
-            this.board.getPosition(0, 1) == this.TOKENSTATE[this.player] && this.board.getPosition(1,1) == this.TOKENSTATE[this.player] && this.board.getPosition(2,1) == this.TOKENSTATE[this.player] ||
-            this.board.getPosition(0, 2) == this.TOKENSTATE[this.player] && this.board.getPosition(1,2) == this.TOKENSTATE[this.player] && this.board.getPosition(2,2) == this.TOKENSTATE[this.player] ||
-            this.board.getPosition(0, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(1,1) == this.TOKENSTATE[this.player] && this.board.getPosition(2,2) == this.TOKENSTATE[this.player] ||
-            this.board.getPosition(2, 0) == this.TOKENSTATE[this.player] && this.board.getPosition(1,1) == this.TOKENSTATE[this.player] && this.board.getPosition(0,2) == this.TOKENSTATE[this.player]){
+    getMove(board){
+        return this.getPlayerFunction(board);
+    }
+
+    getFileColumn(){
+        let row, column;
+        do {
+            row = this.getPosition("FILE");
+            column = this.getPosition("COLUMN");
+        } while (!this.board.isPosititionValid(row, column));
+        console.log("SE HA ELEGIDO LA FILA: " + row);
+        console.log("SE HA ELEGIDO LA COLUMNA: " + column);
+        return { file: row, column };
+    }
+
+    getPosition(fileOColumn){
+        let rowOrColumn = parseInt(prompt("Agrega una posicion valida del tablero " + fileOColumn + " 1-2-3"));
+        const OFFSET = 1;
+        console.log(rowOrColumn);
+        return rowOrColumn - OFFSET;
+    }
+}
+
+class Turn{
+    constructor(players, board){
+        this.players = players;
+        this.board = board;
+        this.playerIndex = 0;
+        this.currentPlayer = this.players[this.playerIndex];
+        this.N_PLAYERS = 2;
+    }
+
+    getCurrentPlayer(){
+        return this.currentPlayer;
+    }
+
+    next(){
+        this.playerIndex = (this.playerIndex + 1) % this.N_PLAYERS;
+        this.currentPlayer = this.players[this.playerIndex];
+    }
+
+    makeMove(){
+        let [row, column] =this.currentPlayer.getMove(this.board);
+
+        this.board.update(row, column, this.currentPlayer.getToken());
+        this.board.print();
+    
+        console.log("TIRADA END")
+    }
+}
+
+class Tictactoe{
+    constructor(){    
+        this.mov_restantes;
+        this.board;
+        this.win;   
+        this.turn = NaN;
+    }
+
+    initialValues(){
+        this.mov_restantes = 9;
+        this.board = new BoardTictactoe(3, 3);
+        this.turn = new Turn(this.getTypesPlayers(), this.board);
+    }
+
+    init(){
+        console.log(" INICIA EL JUEGO TIC TAC TOE ");       
+        this.initialValues(); 
+        this.board.print();
+        
+        do {
+            this.turn.makeMove();
+            this.win = this.playerWin(this.turn.getCurrentPlayer());
+            if (!this.win) {
+                this.turn.next();
+                this.mov_restantes -= 1;
+            }
+        }while(!this.gameEnd())
+        this.printMessageEndGame(this.turn.getCurrentPlayer());
+    }
+
+    gameEnd(){
+        return this.win || this.mov_restantes <= 0;
+    }
+
+    playerWin(player){
+        if(this.board.getPosition(0, 0) == player.getToken() && this.board.getPosition(0,1) == player.getToken() && this.board.getPosition(0,2) == player.getToken() ||
+            this.board.getPosition(1, 0) == player.getToken() && this.board.getPosition(1,1) == player.getToken() && this.board.getPosition(1,2) == player.getToken() ||
+            this.board.getPosition(2, 0) == player.getToken() && this.board.getPosition(2,1) == player.getToken() && this.board.getPosition(2,2) == player.getToken() ||
+            this.board.getPosition(0, 0) == player.getToken() && this.board.getPosition(1,0) == player.getToken() && this.board.getPosition(2,0) == player.getToken() ||
+            this.board.getPosition(0, 1) == player.getToken() && this.board.getPosition(1,1) == player.getToken() && this.board.getPosition(2,1) == player.getToken() ||
+            this.board.getPosition(0, 2) == player.getToken() && this.board.getPosition(1,2) == player.getToken() && this.board.getPosition(2,2) == player.getToken() ||
+            this.board.getPosition(0, 0) == player.getToken() && this.board.getPosition(1,1) == player.getToken() && this.board.getPosition(2,2) == player.getToken() ||
+            this.board.getPosition(2, 0) == player.getToken() && this.board.getPosition(1,1) == player.getToken() && this.board.getPosition(0,2) == player.getToken()){
             return true;
             }
         return false;
     }
 
     getTypesPlayers(){
-        const playerTypes = ["JUGADOR", "MAQUINA"];
+        const TOKEN_STATE = ['X', 'Y'];
+        const PLAYERS = ["JUGADOR", "MAQUINA"];
         let answerd;
         let isAnswerdValid;
         do{
@@ -128,57 +167,38 @@ class Tictactoe{
             isAnswerdValid = answerd === 1 || answerd === 2 || answerd === 3;
         }while(!isAnswerdValid)
 
+        const GAME_MODES = [[new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[0]), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[0])],
+                            [new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[0]), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[1])],
+                            [new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[1]), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[1])]];
 
-        const playTypes = [[playerTypes[0], playerTypes[0]],
-                            [playerTypes[0], playerTypes[1]],
-                            [playerTypes[1], playerTypes[1]]];
-        return playTypes[answerd - 1];        
+        return GAME_MODES[answerd - 1];        
     }
 
-    getFileColumn(){
-        let file, column;
-        do {
-            file = this.getPosition("FILE");
-            column = this.getPosition("COLUMN");
-        } while (!this.board.isPosititionValid(file, column));
-        console.log("SE HA ELEGIDO LA FILA: " + file);
-        console.log("SE HA ELEGIDO LA COLUMNA: " + column);
-        return { file, column };
-    }
-
-    getPosition(fileOColumn){
-        let fileColumn = parseInt(prompt("Agrega una posicion valida del tablero " + fileOColumn + " 1-2-3"));
-        const OFFSET = 1;
-        console.log(fileColumn);
-        return fileColumn - OFFSET;
-    }
-
-    printMessageEndGame(){
-        const players = ["PLAYER 1", "PLAYER 2"];
-        this.win ?  console.log("ENORABUENA EL JUGADOR: " + players[this.player] + " HA GANADO"):
+    printMessageEndGame(currentPlayer){
+        this.win ?  console.log("ENORABUENA EL JUGADOR: " + currentPlayer + " HA GANADO"):
                     console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
     }
 }
 
 class BoardTictactoe{
-    constructor(files, columns){
-        this.files = files;
+    constructor(rows, columns){
+        this.rows = rows;
         this.columns = columns;
-        this.board = this.inicializeTablero(this.files, this.columns);
+        this.board = this.inicializeTablero(this.rows, this.columns);
     }
 
     getFilesLength(){
-        return this.files;
+        return this.rows;
     }
 
     getColumnsLength() {  
         return this.columns;
     }
 
-    inicializeTablero(files, columns){
+    inicializeTablero(rows, columns){
         const initialValue = "0";
         let board = [];
-        for(let i = 0; i < files; i++){
+        for(let i = 0; i < rows; i++){
             board[i] = [];
             for (let j = 0; j < columns; j++){
                 board[i][j] = initialValue;
@@ -187,9 +207,9 @@ class BoardTictactoe{
         return board;
     }
 
-    update(file, column, token){
-        console.log(file + " " +  column + " " + token);
-        this.board[file][column] = token;
+    update(row, column, token){
+        console.log(row + " " +  column + " " + token);
+        this.board[row][column] = token;
     }
 
     isPosititionValid(file, column){
@@ -205,27 +225,24 @@ class BoardTictactoe{
         return this.board[file][column];
     }
 
-    existPosition(file, column){
-        let validFile = false;
-        let validColumn = false;
-        if(0 <= file && file < (this.files + 1)){
-            console.log("LA FILA ELEGIDA ES VALIDA");
-            validFile = true; 
-        }
-        if(0 <= column && column < (this.columns + 1)){
-            console.log("LA COLUMNA ELEGINA ES");
-            validColumn = true;
+    existPosition(position){
+        const MIN_POSITION = 0;
+        const MAX_POSITION = this.board.length();
+
+        if (isNaN(position)) {
+            console.log("La posición ingresada no es válida. Por favor, ingresa un número.");
+            return false;
         }
 
-        if(validFile && validColumn){
-            return true;
-        } 
-        console.log("LA POSICION NO ES VALIDA");
-        return false;
+        if (position < MIN_POSITION || position > MAX_POSITION - 1) {
+            console.log("La posición está fuera del rango válido (1-3). Por favor, ingresa un valor válido.");
+            return false;
+        }                                    
+        return true;  
     }
 
-    isEmpy(file, column){
-        if(this.board[file][column] === "0"){
+    isEmpy(row, column){
+        if(this.board[row][column] === "0"){
             return true;
         }
         console.log("LA POSICION ELEGIDA NO ES VALIDA POR QUE YA ESTA OCUPADA");
