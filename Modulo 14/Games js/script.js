@@ -1,8 +1,13 @@
 
 class PlayerTictactoe{
-    constructor(token, player){
+    constructor(token, player, name){
         this.TOKEN = token
         this.player = player        
+        this.NAME = name;
+    }
+
+    getName(){
+        return this.NAME;
     }
 
     getToken() { 
@@ -81,7 +86,7 @@ class PlayerTictactoe{
     }
 }
 
-class Turn{
+class TurnTicTacToe{
     constructor(players, board){
         this.players = players;
         this.board = board;
@@ -120,7 +125,7 @@ class Tictactoe{
     initialValues(){
         this.mov_restantes = 9;
         this.board = new BoardTictactoe(3, 3);
-        this.turn = new Turn(this.getTypesPlayers(), this.board);
+        this.turn = new TurnTicTacToe(this.getTypesPlayers(), this.board);
     }
 
     init(){
@@ -136,7 +141,7 @@ class Tictactoe{
                 this.mov_restantes -= 1;
             }
         }while(!this.gameEnd())
-        this.printMessageEndGame(this.turn.getCurrentPlayer());
+        this.printMessageEndGame(this.turn.getCurrentPlayer().getName());
     }
 
     gameEnd(){
@@ -167,15 +172,15 @@ class Tictactoe{
             isAnswerdValid = answerd === 1 || answerd === 2 || answerd === 3;
         }while(!isAnswerdValid)
 
-        const GAME_MODES = [[new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[0]), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[0])],
-                            [new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[0]), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[1])],
-                            [new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[1]), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[1])]];
+        const GAME_MODES = [[new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1"), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[0], "PLAYER 2")],
+                            [new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1"), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2")],
+                            [new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[1], "PLAYER 1"), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2")]];
 
         return GAME_MODES[answerd - 1];        
     }
 
-    printMessageEndGame(currentPlayer){
-        this.win ?  console.log("ENORABUENA EL JUGADOR: " + currentPlayer + " HA GANADO"):
+    printMessageEndGame(playerName){
+        this.win ?  console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO"):
                     console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
     }
 }
@@ -257,24 +262,23 @@ class BoardTictactoe{
 }
 
 class BoardConnecta4{
-    constructor(files, columns, tokenState){
-        this.files = files;
-        this.column = columns;
-        this.board = this.inicializeBoard(this.files, this.column);
-        this.movRestantes = this.files * this.column;
-        this.tokenState = tokenState;
+    constructor(rowns, columns){
+        this.ROWNS = rowns;
+        this.COLUMNS = columns;
+        this.boardState = this.inicializeBoard(this.ROWNS, this.COLUMNS);
+        this.movRestantes = this.ROWNS * this.COLUMNS;
     }
 
-    get_mov_restantes(){
+    getMovRestantes(){
         return this.movRestantes;
     }
 
-    inicializeBoard(FILES, COLUMNS){    
+    inicializeBoard(rowns, columns){    
         const intialValue = "0";
         let board = [];
-        for(let i = 0; i < COLUMNS; i++){
+        for(let i = 0; i < columns; i++){
             board[i] =[];
-            for (let j = 0; j < FILES; j++){
+            for (let j = 0; j < rowns; j++){
                 board[i][j] = intialValue;
             }
         }    
@@ -282,80 +286,156 @@ class BoardConnecta4{
     }
 
     gePosition(file, column){
-        return this.board[column][file];
+        return this.boardState[column][file];
     }
 
-    isPositionValid(COLUMN){
-        for(let i = 0; i < this.files; i++){ 
-            if(this.board[COLUMN][i] == "0"){
+    isPositionValid(column){
+        if (column === NaN){
+            console.log(" EL VALOR INGRESADO NO PUEDE SER NULO");
+            return false;
+        }
+        
+        if(column < 0 || column > 6){
+            console.log(" VALOR FUERA DE RANGO");
+            return false;
+        }
+
+        for(let i = 0; i < this.ROWNS; i++){ 
+            if(this.boardState[column][i] === "0"){
                 return true;
             }
         }
+        
         console.log("LA COLUMNA ELEGIDA NO ES VALIDA, ESTA LLENA.")
         return false;
     }
 
-    isOccupied(position){
-        for(const token of this.tokenState){
-            if(position === token){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    update(column, tokenState){
-        let index = 0;
-        while(this.isOccupied(this.board[column][index])){
-            index += 1;
+    update(col, tokenState){
+        let row = 0;     
+        while(this.boardState[col][row] !== "0"){
+            row += 1;
         }    
-        this.board[column][index] = tokenState;
+        this.boardState[col][row] = tokenState;
         this.movRestantes -= 1;
     }
 
     print(){
-        for(let i = 0; i < this.column; i++){
-            console.log(this.board[i]);
+        for(let i = 0; i < this.COLUMNS; i++){
+            console.log(this.boardState[i]);
         }
         console.log(" ");
     }
 }
 
+class PlayerConnect4{
+    constructor(player, token, name){
+        this.TOKEN = token
+        this.player = player        
+        this.NAME = name;
+    }
+    
+    getName() { 
+        return this.NAME;
+    }
+
+    getToken(){
+        return this.TOKEN;
+    }
+
+    getColumWithFunctionby(playerType, board){
+        let getTiradaColumn;
+
+        const functionPlayerType = { 
+            "JUGADOR": function getColumn(board){
+                            let column;
+                            do{ 
+                                column = parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));         
+                                column -= 1;
+                            }while(!board.isPositionValid(column)) 
+                            return column;
+                        } 
+        , "MAQUINA": function getRandomColumn(board){
+                            let column;
+                            const MAX_COLUMN = 7;
+                            do{
+                                column = Math.floor(Math.random() * MAX_COLUMN); // 0...6
+                            }while(!board.isPositionValid(column))
+
+                            return column;
+                        }
+        }
+
+        getTiradaColumn = functionPlayerType[playerType];            
+        return getTiradaColumn(board);        
+    }
+
+    getMove(board){        
+        const column = this.getColumWithFunctionby(this.player, board);         
+        return column;
+    }
+}
+
+class TurnConnecta4{
+    constructor(players){
+        this.players = players;
+        this.playerIndex = 0;
+        this.currentPlayer = this.players[this.playerIndex];
+        this.N_PLAYERS = 2;
+    }
+
+    getCurrentPlayer() { 
+        return this.currentPlayer;
+    }
+
+    next(){
+        this.playerIndex = (this.playerIndex + 1) % this.N_PLAYERS;
+        this.currentPlayer = this.players[this.playerIndex];
+    }
+
+    makeMove(board){
+        let column = this.currentPlayer.getMove(board);
+
+        board.update(column, this.currentPlayer.getToken());
+        board.print();    
+    }
+}
+
+
 class Connecta4{
     constructor(){
-        this.N_PLAYERS = 2;
-        this.TOKEN_STATES = ['RED', 'YELLOW']; 
         this.COLUMNS = 7;
-        this.FILES = 6;
-        this.player = 0;
+        this.ROWNS = 6;
         this.win = false;
         this.board;
+        this.turn = NaN;
+    }
+
+    initialValues(){
+        this.board = new BoardConnecta4(this.ROWNS, this.COLUMNS);
+        this.turn = new TurnConnecta4(this.getGamePlayersModes());
     }
 
     init(){
-        this.board = new BoardConnecta4(this.FILES, this.COLUMNS, this.TOKEN_STATES);
-        this. playerMode = this.getTypesPlayers();
-
         console.log(" INICIA EL JUEGO CONNECTA 4 ");
-        do {
-            let column;
-            do {                
-                column = this.getColumWithFunctionby(this.playerMode[this.player]);                
-            } while (!this.board.isPositionValid(column));
-            this.board.update(column, this.TOKEN_STATES[this.player]);
-            this.printTablero();
+        this.initialValues();
+        this.board.print();
 
-            this.win = this.playerWin();
+        do {
+            this.turn.makeMove(this.board);
+
+            this.win = this.checkPlayerWin();
             if (!this.win) {
-                this.player = (this.player + 1) % this.N_PLAYERS;
+                this.turn.next();
+                this.movRestantes -= 1;
             }
 
         } while (!this.gameEnd()); 
-        this.printMessageEndGame();
+        this.printMessageEndGame(this.turn.getCurrentPlayer().getName());
     }
 
-    getTypesPlayers(){
-        const playerTypes = ["JUGADOR", "MAQUINA"];
+    getGamePlayersModes(){
+        const PLAYER_TYPES = ["JUGADOR", "MAQUINA"];
+        const TOKEN_STATES = ['RED', 'YELLOW']; 
         let answer;
         let isAnswerdValid;
         do{
@@ -363,45 +443,20 @@ class Connecta4{
             isAnswerdValid = answer === 1 || answer === 2 || answer === 3;
         }while(!isAnswerdValid)
 
-        const playModes = [[playerTypes[0], playerTypes[0]], [playerTypes[0], playerTypes[1]], [playerTypes[1], playerTypes[1]]];
-        return playModes[answer - 1];
+
+        //constructor(player, token, name){
+        const GAME_MODES =  [[new PlayerConnect4(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1"), new PlayerConnect4(PLAYER_TYPES[0], TOKEN_STATES[1], "PLAYER 2")],
+                            [new PlayerConnect4(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1"), new PlayerConnect4(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2")],
+                            [new PlayerConnect4(PLAYER_TYPES[1], TOKEN_STATES[0], "PLAYER 1"), new PlayerConnect4(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2")]];
+        return GAME_MODES[answer - 1];
     }
 
-    getColumWithFunctionby(playerType){
-        let getTiradaColumn;
-
-        const functionPlayerType = { 
-            "JUGADOR": function getColumn(){
-                            let column;
-                            let incorrectColumn;
-                            do{ 
-                                incorrectColumn = true;                 
-                                column = parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));
-                                
-                                if(0 < column && column < 8){
-                                    incorrectColumn = false; 
-                                }
-                                column -= 1;
-                            }while(incorrectColumn) 
-                            return column;
-                        } 
-        , "MAQUINA": function getRandomColumn(){
-                            // 0...6
-                            const MAX_COLUMN = 7;
-                            return Math.floor(Math.random() * MAX_COLUMN);
-                        }
-        }
-
-        getTiradaColumn = functionPlayerType[playerType];            
-        return getTiradaColumn();        
-    }
-
-    playerWin(){
-        let tokenState = this.TOKEN_STATES[this.player];
+    checkPlayerWin(){
+        let tokenState = this.turn.getCurrentPlayer().getToken();
         console.log(tokenState);        
 
         let cuantroEnRaya = false;
-        for(let idFil = 0; idFil < this.FILES ; idFil++){
+        for(let idFil = 0; idFil < this.ROWNS ; idFil++){
             for(let idCol = 0; idCol < this.COLUMNS; idCol++){
                 cuantroEnRaya = this.checkPosition( idCol, idFil, tokenState);
                 if (cuantroEnRaya){
@@ -447,7 +502,7 @@ class Connecta4{
     }
 
     gameEnd() {
-        return this.win || this.movRestantes <= 0;
+        return this.win || this.board.getMovRestantes() <= 0;
     }
 
     printTablero(){
@@ -468,10 +523,10 @@ class Connecta4{
         return Math.floor(Math.random() * MAX_COLUMN);
     }
 
-    printMessageEndGame(){
+    printMessageEndGame(playerName){
         const PLAYERS = ["PLAYER 1", "PLAYER 2"];
         if (this.win){
-            console.log("ENORABUENA EL JUGADOR: " + PLAYERS[this.player] + " HA GANADO");
+            console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO");
         }else{
             console.log("NO HAY MAS MOVIMIENTOS POSIBLES, EMPATE");
         }
