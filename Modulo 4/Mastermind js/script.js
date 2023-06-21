@@ -31,7 +31,7 @@ function mastermind(){
                 let InputCombination;
                         
                 do{                     
-                    combinacion_valida = false;
+                    let combinacion_valida = false;
                     let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
                     InputCombination = entrada.split(' ');
     

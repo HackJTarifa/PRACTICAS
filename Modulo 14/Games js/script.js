@@ -1,5 +1,5 @@
 
-class PlayerTictactoe{
+class PlayerT{
     constructor(token, player, name){
         this.TOKEN = token
         this.player = player        
@@ -15,52 +15,52 @@ class PlayerTictactoe{
     }
 
     getPlayerFunction(board){
-        const functionPlayerType ={
-            "JUGADOR": function getFileColumn(board) {
-                            let file, column;
-                            do {
-                                file = getPosition("ROW");
-                                column = getPosition("COLUMN");
-                            } while (!isPosititionValid(board, file, column));
-                            return [file, column];
-                                                
-                            function isPosititionValid(tablero, file, column){
-                                return tablero.getPosition(file, column) === "0";                      
-                            }                
-                                            
-                            function getPosition(fileOrColumn){
-                                let fileColumn;
-                                do{ 
-                                    incorrectPosition = true;         
-                                    fileColumn = parseInt(prompt("Agrega una posicion valida del tablero " + fileOrColumn + " 1-2-3"));
-                                } while (!isValidPosition(fileColumn));  
-                                                
-                                const OFFSET = 1;
-                                return fileColumn - OFFSET;
-                            }
+        const modes = {"JUGADOR": getFileColumn, 
+                        "MAQUINA": getRandomPosition};
 
-                            function isValidPosition(position){
-                                return board.existPosition(position);      
-                            }
-                        }              
-        , "MAQUINA": function getRandomPosition(board){ 
-                        let validPosition = [];
-                        for(let i = 0; i < board.getFilesLength(); i++){             
-                            for (let j = 0; j < board.getColumnsLength(); j++){
-                                if (board.getPosition(i, j) === '0'){
-                                    validPosition.push({row: i, column: j});
-                                }
-                            }
-                        }
-                        const randomIndex = Math.floor(Math.random() * validPosition.length);   
-                        const { row, column } = validPosition[randomIndex];
-                        return [row, column];
+        function getFileColumn(board) {
+            let file, column;
+            do {
+                file = getPosition("ROW");
+                column = getPosition("COLUMN");
+            } while (!isPosititionValid(board, file, column));
+            return [file, column];
+                                
+            function isPosititionValid(tablero, file, column){
+                return tablero.getPosition(file, column) === "0";                      
+            }                
+
+            function getPosition(fileOrColumn){
+                let fileColumn;
+                
+                do{ 
+                    fileColumn = parseInt(prompt("Agrega una posicion valida del tablero " + fileOrColumn + " 1-2-3"));
+                } while (!isValidPosition(fileColumn));  
+                
+                const OFFSET = 1;
+                return fileColumn - OFFSET;
+            }
+
+            function isValidPosition(position){
+                return board.existPosition(position);      
+            }
+        }  
+
+        function getRandomPosition(board){ 
+            let validPosition = [];
+            for(let i = 0; i < board.getFilesLength(); i++){             
+                for (let j = 0; j < board.getColumnsLength(); j++){
+                    if (board.getPosition(i, j) === '0'){
+                        validPosition.push({row: i, column: j});
                     }
+                }
+            }
+            const randomIndex = Math.floor(Math.random() * validPosition.length); 
+            const { row, column } = validPosition[randomIndex];
+            return [row, column];
         }
 
-        let getTirada = functionPlayerType[this.player]; 
-        let resultado = getTirada(board);
-        return resultado;
+        return modes[this.player](board);
     }
 
     getMove(board){
@@ -86,7 +86,59 @@ class PlayerTictactoe{
     }
 }
 
-class TurnTicTacToe{
+class GameLogicT{
+    constructor(turn){
+        this.maxTurns;
+        this.turn = turn;
+        this.win = false;
+    }
+
+    init(){
+        if(this.maxTurn !== 9){
+            this.maxTurns = 9;
+        }
+    }
+
+    getWin(){
+        return this.win;
+    }
+
+    gessCombination(board, player){
+        this.win = this.playerWin(board, player);
+
+    }
+
+    gameEnd(){
+        return this.win || this.maxTurns <= 0;
+    }
+
+    lessMoviment(){
+        this.maxTurns -= 1;
+    }
+
+    playerWin(board, player){
+        if(board.getPosition(0, 0) == player.getToken() && board.getPosition(0,1) == player.getToken() && board.getPosition(0,2) == player.getToken() ||
+            board.getPosition(1, 0) == player.getToken() && board.getPosition(1,1) == player.getToken() && board.getPosition(1,2) == player.getToken() ||
+            board.getPosition(2, 0) == player.getToken() && board.getPosition(2,1) == player.getToken() && board.getPosition(2,2) == player.getToken() ||
+            board.getPosition(0, 0) == player.getToken() && board.getPosition(1,0) == player.getToken() && board.getPosition(2,0) == player.getToken() ||
+            board.getPosition(0, 1) == player.getToken() && board.getPosition(1,1) == player.getToken() && board.getPosition(2,1) == player.getToken() ||
+            board.getPosition(0, 2) == player.getToken() && board.getPosition(1,2) == player.getToken() && board.getPosition(2,2) == player.getToken() ||
+            board.getPosition(0, 0) == player.getToken() && board.getPosition(1,1) == player.getToken() && board.getPosition(2,2) == player.getToken() ||
+            board.getPosition(2, 0) == player.getToken() && board.getPosition(1,1) == player.getToken() && board.getPosition(0,2) == player.getToken()){
+            return true;
+            }
+        return false;
+    }
+
+    printMessageEndGame(playerName){
+        this.win ?  console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO"):
+                    console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
+    }
+
+
+}
+
+class TurnT{
     constructor(players, board){
         this.players = players;
         this.board = board;
@@ -99,9 +151,10 @@ class TurnTicTacToe{
         return this.currentPlayer;
     }
 
-    next(){
+    next(gameLogic){
         this.playerIndex = (this.playerIndex + 1) % this.N_PLAYERS;
         this.currentPlayer = this.players[this.playerIndex];
+        gameLogic.lessMoviment();
     }
 
     makeMove(){
@@ -116,16 +169,16 @@ class TurnTicTacToe{
 
 class Tictactoe{
     constructor(){    
-        this.mov_restantes;
         this.board;
         this.win;   
+        this.gameLogic;
         this.turn = NaN;
     }
 
     initialValues(){
-        this.mov_restantes = 9;
-        this.board = new BoardTictactoe(3, 3);
-        this.turn = new TurnTicTacToe(this.getTypesPlayers(), this.board);
+        this.board = new BoardT(3, 3);
+        this.turn = new TurnT(this.getTypesPlayers(), this.board);
+        this.gameLogic = new GameLogicT();
     }
 
     init(){
@@ -135,31 +188,12 @@ class Tictactoe{
         
         do {
             this.turn.makeMove();
-            this.win = this.playerWin(this.turn.getCurrentPlayer());
-            if (!this.win) {
-                this.turn.next();
-                this.mov_restantes -= 1;
-            }
-        }while(!this.gameEnd())
-        this.printMessageEndGame(this.turn.getCurrentPlayer().getName());
-    }
-
-    gameEnd(){
-        return this.win || this.mov_restantes <= 0;
-    }
-
-    playerWin(player){
-        if(this.board.getPosition(0, 0) == player.getToken() && this.board.getPosition(0,1) == player.getToken() && this.board.getPosition(0,2) == player.getToken() ||
-            this.board.getPosition(1, 0) == player.getToken() && this.board.getPosition(1,1) == player.getToken() && this.board.getPosition(1,2) == player.getToken() ||
-            this.board.getPosition(2, 0) == player.getToken() && this.board.getPosition(2,1) == player.getToken() && this.board.getPosition(2,2) == player.getToken() ||
-            this.board.getPosition(0, 0) == player.getToken() && this.board.getPosition(1,0) == player.getToken() && this.board.getPosition(2,0) == player.getToken() ||
-            this.board.getPosition(0, 1) == player.getToken() && this.board.getPosition(1,1) == player.getToken() && this.board.getPosition(2,1) == player.getToken() ||
-            this.board.getPosition(0, 2) == player.getToken() && this.board.getPosition(1,2) == player.getToken() && this.board.getPosition(2,2) == player.getToken() ||
-            this.board.getPosition(0, 0) == player.getToken() && this.board.getPosition(1,1) == player.getToken() && this.board.getPosition(2,2) == player.getToken() ||
-            this.board.getPosition(2, 0) == player.getToken() && this.board.getPosition(1,1) == player.getToken() && this.board.getPosition(0,2) == player.getToken()){
-            return true;
-            }
-        return false;
+            this.gameLogic.gessCombination(this.board, this.turn.getCurrentPlayer());
+            if(!this.gameLogic.getWin()){
+                this.turn.next(this.gameLogic);
+            }            
+        }while(!this.gameLogic.gameEnd())
+        this.gameLogic.printMessageEndGame(this.turn.getCurrentPlayer().getName());
     }
 
     getTypesPlayers(){
@@ -172,20 +206,15 @@ class Tictactoe{
             isAnswerdValid = answerd === 1 || answerd === 2 || answerd === 3;
         }while(!isAnswerdValid)
 
-        const GAME_MODES = [[new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1"), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[0], "PLAYER 2")],
-                            [new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1"), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2")],
-                            [new PlayerTictactoe(TOKEN_STATE[0], PLAYERS[1], "PLAYER 1"), new PlayerTictactoe(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2")]];
+        const GAME_MODES = [[new PlayerT(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1"), new PlayerT(TOKEN_STATE[1], PLAYERS[0], "PLAYER 2")],
+                            [new PlayerT(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1"), new PlayerT(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2")],
+                            [new PlayerT(TOKEN_STATE[0], PLAYERS[1], "PLAYER 1"), new PlayerT(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2")]];
 
         return GAME_MODES[answerd - 1];        
-    }
-
-    printMessageEndGame(playerName){
-        this.win ?  console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO"):
-                    console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
-    }
+    }    
 }
 
-class BoardTictactoe{
+class BoardT{
     constructor(rows, columns){
         this.rows = rows;
         this.columns = columns;
@@ -217,29 +246,24 @@ class BoardTictactoe{
         this.board[row][column] = token;
     }
 
-    isPosititionValid(file, column){
-        if (this.existPosition(file, column)){
-            if(this.isEmpy(file, column)){
-                return true;;
-            }
-        } 
-        return false;
+    isPosititionValid(row, column){
+        return this.existPosition(row, column) && this.isEmpy(row, column);
     }
 
-    getPosition(file, column){
-        return this.board[file][column];
+    getPosition(row, column){
+        return this.board[row][column];
     }
 
     existPosition(position){
         const MIN_POSITION = 0;
-        const MAX_POSITION = this.board.length();
+        const MAX_POSITION = 3;
 
         if (isNaN(position)) {
             console.log("La posición ingresada no es válida. Por favor, ingresa un número.");
             return false;
         }
 
-        if (position < MIN_POSITION || position > MAX_POSITION - 1) {
+        if (position < MIN_POSITION || position > MAX_POSITION) {
             console.log("La posición está fuera del rango válido (1-3). Por favor, ingresa un valor válido.");
             return false;
         }                                    
@@ -261,10 +285,13 @@ class BoardTictactoe{
     }
 }
 
-class BoardConnecta4{
+
+
+
+class BoardC{
     constructor(rowns, columns){
-        this.ROWNS = rowns;
-        this.COLUMNS = columns;
+        this.ROWNS = rowns; // 6
+        this.COLUMNS = columns; // 7
         this.boardState = this.inicializeBoard(this.ROWNS, this.COLUMNS);
         this.movRestantes = this.ROWNS * this.COLUMNS;
     }
@@ -295,7 +322,7 @@ class BoardConnecta4{
             return false;
         }
         
-        if(column < 0 || column > 6){
+        if(column < 0 || column > this.COLUMNS - 1){
             console.log(" VALOR FUERA DE RANGO");
             return false;
         }
@@ -327,7 +354,7 @@ class BoardConnecta4{
     }
 }
 
-class PlayerConnect4{
+class PlayerC{
     constructor(player, token, name){
         this.TOKEN = token
         this.player = player        
@@ -342,40 +369,39 @@ class PlayerConnect4{
         return this.TOKEN;
     }
 
-    getColumWithFunctionby(playerType, board){
-        let getTiradaColumn;
+    getColumWithFunctionby( board){
+        const modes = {"PLAYER": getColumn, 
+                        "MAQUINA": getRandomColumn};
 
-        const functionPlayerType = { 
-            "JUGADOR": function getColumn(board){
-                            let column;
-                            do{ 
-                                column = parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));         
-                                column -= 1;
-                            }while(!board.isPositionValid(column)) 
-                            return column;
-                        } 
-        , "MAQUINA": function getRandomColumn(board){
-                            let column;
-                            const MAX_COLUMN = 7;
-                            do{
-                                column = Math.floor(Math.random() * MAX_COLUMN); // 0...6
-                            }while(!board.isPositionValid(column))
-
-                            return column;
-                        }
+        function getColumn(board){
+            let column;
+            do{ 
+                column = parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));         
+                column -= 1;
+            }while(!board.isPositionValid(column)) 
+            return column;
         }
 
-        getTiradaColumn = functionPlayerType[playerType];            
-        return getTiradaColumn(board);        
+        function getRandomColumn(board){
+            let column;
+            const MAX_COLUMN = 7;
+            do{
+                column = Math.floor(Math.random() * MAX_COLUMN); // 0...6
+            }while(!board.isPositionValid(column))
+            return column;
+        }
+        
+
+        return modes[this.player](board);   
     }
 
     getMove(board){        
-        const column = this.getColumWithFunctionby(this.player, board);         
+        const column = this.getColumWithFunctionby(board);         
         return column;
     }
 }
 
-class TurnConnecta4{
+class TurnC{
     constructor(players){
         this.players = players;
         this.playerIndex = 0;
@@ -400,7 +426,6 @@ class TurnConnecta4{
     }
 }
 
-
 class Connecta4{
     constructor(){
         this.COLUMNS = 7;
@@ -412,7 +437,7 @@ class Connecta4{
 
     initialValues(){
         this.board = new BoardConnecta4(this.ROWNS, this.COLUMNS);
-        this.turn = new TurnConnecta4(this.getGamePlayersModes());
+        this.turn = new TurnC(this.getGamePlayersModes());
     }
 
     init(){
@@ -445,9 +470,9 @@ class Connecta4{
 
 
         //constructor(player, token, name){
-        const GAME_MODES =  [[new PlayerConnect4(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1"), new PlayerConnect4(PLAYER_TYPES[0], TOKEN_STATES[1], "PLAYER 2")],
-                            [new PlayerConnect4(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1"), new PlayerConnect4(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2")],
-                            [new PlayerConnect4(PLAYER_TYPES[1], TOKEN_STATES[0], "PLAYER 1"), new PlayerConnect4(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2")]];
+        const GAME_MODES =  [[new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1"), new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[1], "PLAYER 2")],
+                            [new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1"), new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2")],
+                            [new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[0], "PLAYER 1"), new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2")]];
         return GAME_MODES[answer - 1];
     }
 
@@ -533,7 +558,125 @@ class Connecta4{
     }
 }
 
-class WinningCombinationManager{
+class GameLogicC{
+
+}
+
+class PlayerM{
+    constructor(){
+        this.PLAYER_TYPE;        
+        this.NAME = "JUGADOR 1";
+    }
+
+    setPlayerType(playerType){
+        this.PLAYER_TYPE = playerType;
+    }
+
+    getName(){
+        return this.NAME;
+    }
+
+    getPlayerTypeCombination(validColors){ 
+        const getCombinationPlayer = function(validColors){
+            let InputCombination;
+            let vaildCombination;
+
+            do{                     
+                vaildCombination = false;
+                let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
+                InputCombination = entrada.split(' ');
+    
+                let nColoresValidos = 0;
+                for(let i = 0; i < InputCombination.length; i++){
+                    let colorValido = false;
+                    for (let j = 0; j < validColors.length && !colorValido ; j++){
+                        if(InputCombination[i] === validColors[j]){
+                            colorValido = true;
+                        }
+                    }
+                    if(colorValido){
+                        nColoresValidos += 1;
+                    }
+                }
+    
+                const N_COLORS = 5;
+                if(nColoresValidos == N_COLORS){
+                    vaildCombination = true;
+                } 
+            }while(!vaildCombination)
+            return InputCombination;
+        }
+        
+        const getRandomTirada = function(validColors){
+            let colorsRandomTirada = [];
+            const N_COLORS = 5;
+            for(let i = 0; i < N_COLORS; i++){
+                const validColorsRandomIndex = Math.floor(Math.random() * validColors.length);
+                colorsRandomTirada.push(validColors[validColorsRandomIndex]);
+            }
+            return colorsRandomTirada;
+        }                                  
+    
+        const modes ={"JUGADOR": getCombinationPlayer,
+                    "MAQUINA": getRandomTirada};
+
+        console.log("TESTEO: " + this.PLAYER_TYPE);
+        let funcType = modes[this.PLAYER_TYPE];
+        let resultado = funcType(validColors);
+        return resultado;
+    }
+}
+
+class GameLogicM{
+    constructor(player){
+        this.player = player;
+        this.maxTurns = 15;
+        this.inputCombination = [];
+        this.secretCodeManager = new SecretCodeManager();   
+        this.combinacionesPropuestas = [];
+        this.combinationColorStatus = [];    
+        this.win = false; 
+    }
+
+    init(){
+        if(this.maxTurns !== 15){
+            this.maxTurns = 15;
+        }
+        this.secretCodeManager.generateCombination();
+    }
+
+    generatePlayerCombination(){
+        this.inputCombination = this.player.getPlayerTypeCombination(this.secretCodeManager.getValidColors());
+    }
+
+    guessCode(){
+        const combinationColorStatus = this.secretCodeManager.checkCombinacionColorStatus(this.inputCombination);
+        this.win = this.secretCodeManager.isWinningCombination(this.inputCombination);
+        this.updateHistorial(inputCombination, combinationColorStatus);
+        if (!this.win) {
+            this.maxTurns -= 1;
+        }
+    }
+
+    gameEnd(){
+        return this.win || this.mov_restantes <= 0;
+    }
+
+    updateHistorial(inputCombination, aciertos){
+        this.combinacionesPropuestas.push(inputCombination);
+        this.combinationColorStatus.push(aciertos)
+        console.log(inputCombination + " -- " + aciertos );
+    }
+
+    printMessageEndGame(){
+        this.win?
+            console.log("ENORABUENA EL JUGAODR HA GANADO"):
+            console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
+    }
+
+}
+
+class SecretCodeManager{
     constructor(){
         this.VALID_COLORS = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"]; 
         this.winCombination = [];
@@ -632,30 +775,21 @@ class WinningCombinationManager{
 
 class Mastermaind{
     constructor(){
-        this.mov_restantes;
-        this.combinacionesPropuestas = [];
-        this.combinationColorStatus = [];
-        this.win = false;
-        this.inputCombination;
-        this.winCombinationManager = new WinningCombinationManager();
+        this.player = new PlayerM();
+        this.gameLogic; 
     }
 
     init(){
-        this.mov_restantes = 15;
-        this.winCombinationManager.generateCombination();
-        this.playerMode = this.getTypesPlayers();
+        const playerType = this.getTypesPlayers();
+        this.player.setPlayerType(playerType);
+        this.gameLogic = new GameLogicM(this.player);
+        this.gameLogic.init();  
 
         do {
-            const inputCombination = this.getCombinacionWithFunctionby(this.playerMode, this.winCombinationManager.getValidColors());
-            this.combinationColorStatus = this.winCombinationManager.checkCombinacionColorStatus(inputCombination);
-            this.win = this.winCombinationManager.isWinningCombination(inputCombination);
-            this.updateHistorial(inputCombination, this.combinationColorStatus);
-    
-            if (!this.win) {
-                this.mov_restantes -= 1;
-            }
-        } while (!this.gameEnd()); // nor, si las dos son falsas repite bucle
-        this.printMessageEndGame();
+            this.gameLogic.generatePlayerCombination();
+            this.gameLogic.guessCode();
+        } while (!this.gameLogic.gameEnd()); // nor, si las dos son falsas repite bucle
+        this.gameLogic.printMessageEndGame();
     }
 
     getTypesPlayers(){
@@ -668,68 +802,6 @@ class Mastermaind{
         }while(!isAnswerdValid)
 
         return PLAYER_TYPES[answerd - 1];
-    }
-
-    getCombinacionWithFunctionby(playerType, validColors){
-        const functionPlayerType = {"JUGADOR": function getCombinationPlayer(validColors){
-                                        let InputCombination;
-                                
-                                        do{                     
-                                            combinacion_valida = false;
-                                            let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
-                                            InputCombination = entrada.split(' ');
-
-                                            let nColoresValidos = 0;
-                                            for(let i = 0; i < InputCombination.length; i++){
-                                                let colorValido = false;
-                                                for (let j = 0; j < validColors.length && !colorValido ; j++){
-                                                    if(InputCombination[i] === validColors[j]){
-                                                        colorValido = true;
-                                                    }
-                                                }
-                                                if(colorValido){
-                                                    nColoresValidos += 1;
-                                                }
-                                            }
-
-                                            console.log(InputCombination);
-                                            console.log(winCombination);
-                                            const N_COLORS = 5;
-                                            if(nColoresValidos == N_COLORS){
-                                                combinacion_valida = true;
-                                            } 
-                                        }while(!combinacion_valida)
-                                        return InputCombination;
-                                    } 
-                            ,"MAQUINA": function getRandomTirada(validColors){
-                                            let colorsRandomTirada = [];
-                                            const N_COLORS = 5;
-                                            for(let i = 0; i < N_COLORS; i++){
-                                                const validColorsRandomIndex = Math.floor(Math.random() * validColors.length);
-                                                colorsRandomTirada.push(validColors[validColorsRandomIndex]);
-                                            }
-                                            return colorsRandomTirada;
-                                        }
-                                    };        
-
-        let getCombination = functionPlayerType[playerType]; 
-        return getCombination(validColors);
-    }
-
-    updateHistorial(InputCombination, aciertos){
-        this.combinacionesPropuestas.push(InputCombination);
-        this.combinationColorStatus.push(aciertos)
-        console.log(InputCombination + " -- " + aciertos );
-    }
-
-    gameEnd(){
-        return this.win || this.mov_restantes <= 0;
-    }
-
-    printMessageEndGame(){
-        this.win?
-            console.log("ENORABUENA EL JUGAODR HA GANADO"):
-            console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
     }
 }
 
@@ -783,5 +855,4 @@ class App{
 
 let app = new App()
 app.start()
-
 

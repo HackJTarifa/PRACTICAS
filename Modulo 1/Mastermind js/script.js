@@ -27,7 +27,7 @@ do{
     let combinacionIngresada;
     do{        
         do{ // COMPROVAMOS QUE LA COMBINACION ES VALIDA                     
-            combinacion_valida = false;
+            let combinacion_valida = false;
             let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
             combinacionIngresada = entrada.split(' ');
 
