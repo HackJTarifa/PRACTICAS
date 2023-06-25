@@ -15,20 +15,20 @@ class DataInputT{
                 row -= 1;
                 column -= 1;
             }while(!board.isPosititionValid(row, column))
-            return [row , column ];
+            return [row, column];
         }
 
         function getRandomPosition(){ 
-            let validPosition = [];
+            let validPositions = [];
             for(let i = 0; i < board.getFilesLength(); i++){             
                 for (let j = 0; j < board.getColumnsLength(); j++){
-                    if (thiboard.isPositionValid(i, j)){
-                        validPosition.push({row: i, column: j});
+                    if (board.isPositionValid(i, j)){
+                        validPositions.push({row: i, column: j});
                     }
                 }
             }
-            const randomIndex = Math.floor(Math.random() * validPosition.length); 
-            const { row, column } = validPosition[randomIndex];
+            const randomIndex = Math.floor(Math.random() * validPositions.length); 
+            const { row, column } = validPositions[randomIndex];
             return [row, column];
         }
 
@@ -228,7 +228,6 @@ class Tictactoe{
         }while(!this.gameLogic.gameEnd())
         this.gameLogic.printMessageEndGame(this.turns.getCurrentPlayer().getName());
     }
-
 
     getTypesPlayers(){
         const TOKEN_STATE = ['X', 'Y'];
@@ -572,6 +571,30 @@ class Connecta4{
     }
 }
 
+class Combination{
+    constructor(combination){
+        this.combination = combination;
+    }    
+
+    getLength(){
+        return this.combination.length;
+    }
+
+    getColor(index){
+        if(this.combination[index] !== undefined){
+            return this.combination[index];
+        }
+    }
+
+    print(){        
+        console.log("| " +  this.getColor(0) + " | " + 
+                            this.getColor(1) + " | " + 
+                            this.getColor(2) + " | " + 
+                            this.getColor(3) + " | " + 
+                            this.getColor(4) + " |");
+    }
+}
+
 class DataInputM{
     constructor(secretCodeManager){
         this.secretCodeManager = secretCodeManager;
@@ -580,10 +603,11 @@ class DataInputM{
     callEnterDataByFunction(playerType, secretCodeManager){
         function getCombinationPlayer(secretCodeManager){
             let inputCombination;
+            
 
             do{                     
                 let entrada = prompt("Agrega una combinacion de 5 colores validos: ");
-                inputCombination = entrada.split(' ');
+                inputCombination = new Combination(entrada.split(' '));
             }while(!secretCodeManager.isValidCombination(inputCombination))
             return inputCombination;
         }
@@ -591,13 +615,13 @@ class DataInputM{
         function getRandomTirada(secretCodeManager){
             let colorsRandomTirada = [];
             const N_COLORS = 5;
-            const N_DIFERENT_COLORS = secretCodeManager.getDiferentColorsLength();
+            const N_DIFERENT_COLORS = secretCodeManager.getValidColorsLength();
             const VALID_COLORS = secretCodeManager.getValidColors();
             for(let i = 0; i < N_COLORS; i++){
                 const validColorsRandomIndex = Math.floor(Math.random() * N_DIFERENT_COLORS);
                 colorsRandomTirada.push(VALID_COLORS[validColorsRandomIndex]);
             }
-            return colorsRandomTirada;
+            return new Combination(colorsRandomTirada);
         }                                  
     
         const modes ={"JUGADOR": getCombinationPlayer,
@@ -628,44 +652,37 @@ class PlayerM{
 }
 
 class GameLogicM{
-    constructor(player, secretCodeManager){
-        this.player = player;
+    constructor(){
         this.maxTurns = 15;
-        this.inputCombination = [];
-        this.secretCodeManager = secretCodeManager;   
         this.combinacionesPropuestas = [];
         this.combinationColorStatus = [];    
         this.win = false; 
     }
 
-    init(){
-        if(this.maxTurns !== 15){
-            this.maxTurns = 15;
-        }
-        this.secretCodeManager.generateCombination();
+    guessCode(secretCodeManager, inputCombination){
+        const colorMatchStatus = secretCodeManager.checkCombinacionColorStatus(inputCombination);
+        this.win = secretCodeManager.isWinningCombination(inputCombination);
+        this.updateHistorial(colorMatchStatus, inputCombination);
     }
 
-    generatePlayerCombination(){
-        this.inputCombination = this.player.getMove(this.secretCodeManager.getValidColors());
+    lessMoviment(){
+        this.maxTurns -= 1;
     }
 
-    guessCode(){
-        const combinationColorStatus = this.secretCodeManager.checkCombinacionColorStatus(this.inputCombination);
-        this.win = this.secretCodeManager.isWinningCombination(this.inputCombination);
-        this.updateHistorial(combinationColorStatus);
-        if (!this.win) {
-            this.maxTurns -= 1;
-        }
+    playerWin(){
+        return this.win;
     }
 
     gameEnd(){
-        return this.win || this.mov_restantes <= 0;
+        return this.win || this.maxTurns <= 0;
     }
 
-    updateHistorial(aciertos){
-        this.combinacionesPropuestas.push(this.inputCombination);
-        this.combinationColorStatus.push(aciertos)
-        console.log(this.inputCombination + " -- " + aciertos );
+    updateHistorial(colorMatchStatus, inputCombination){
+        this.combinacionesPropuestas.push(inputCombination);
+        this.combinationColorStatus.push(colorMatchStatus)
+        inputCombination.print();
+        colorMatchStatus.print();
+        console.log("----------------------------");
     }
 
     printMessageEndGame(){
@@ -673,16 +690,30 @@ class GameLogicM{
             console.log("ENORABUENA EL JUGAODR HA GANADO"):
             console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
     }
+}
 
+class TurnM{
+    constructor(player){
+        this.player = player;
+    }
+
+    getCurrentPlayer(){
+        return this.player;
+    }
+
+    next(gameLogic){
+        gameLogic.lessMoviment();
+    }
 }
 
 class SecretCodeManager{
     constructor(){
         this.VALID_COLORS = ["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"]; 
-        this.winCombination = [];
+        this.winCombination = this.generateCombination();
+        this.winCombination.print();
     }
 
-    getDiferentColorsLength(){
+    getValidColorsLength(){
         return this.VALID_COLORS.length;
     }
 
@@ -690,8 +721,13 @@ class SecretCodeManager{
         return this.VALID_COLORS;
     }
 
-    getValidColors(){
-        return this.VALID_COLORS;
+    isValidColor(color){
+        for(var i = 0; i < this.VALID_COLORS.length; i++){
+            if(color === this.VALID_COLORS[i]){
+                return true;
+            }
+        }
+        return false;
     }
 
     generateCombination(){
@@ -708,8 +744,7 @@ class SecretCodeManager{
                 winCombination.push(this.VALID_COLORS[index]);
             }
         }while(winCombination.length < 5)
-        this.winCombination = winCombination;
-        this.printCombination();
+        return new Combination(winCombination);        
     }
 
     isWinningCombination(combination){
@@ -717,8 +752,8 @@ class SecretCodeManager{
             return false;
         }
 
-        for(let i = 0; i < this.winCombination.length; i++){
-            if(combination[i] !== this.winCombination[i]){
+        for(let i = 0; i < this.winCombination.getLength(); i++){
+            if(combination.getColor(i) !== this.winCombination.getColor(i)){
                 return false;
             }
         }
@@ -726,7 +761,7 @@ class SecretCodeManager{
     }
 
     areArraysSameLength(combination){
-        return combination.length === this.winCombination.length;
+        return combination.getLength() === this.winCombination.getLength();
     }
 
     isValidCombination(combination){
@@ -735,15 +770,8 @@ class SecretCodeManager{
         }
 
         let nValidColors = 0;
-        for(let i = 0; i < combination.length; i++){
-            let validColor = false;
-            for (let j = 0; j < this.VALID_COLORS.length && !validColor ; j++){
-                if(combination[i] === this.VALID_COLORS[j]){
-                    validColor = true;
-                    break;
-                }
-            }
-            if(!validColor){
+        for(let i = 0; i < combination.getLength(); i++){
+            if(!this.isValidColor(combination.getColor(i))){
                 console.log("color no encontrado");
                 return false;
             }
@@ -756,21 +784,22 @@ class SecretCodeManager{
 
     checkCombinacionColorStatus(combination){
             let supportCombination = [];
-            for(let i = 0; i < combination.length; i++){
-                if(combination[i] === this.winCombination[i]){
+            for(let i = 0; i < combination.getLength(); i++){
+                const color = combination.getColor(i);
+                if(color === this.winCombination.getColor(i)){
                     supportCombination[i] = "BLANCO";
-                }else if(this.isColorImArray(combination[i])){
+                }else if(this.isColorInArray(color)){
                     supportCombination[i] = "NEGRO";
                 }else{
                     supportCombination[i] = "VACIO";
                 }                
             }
-            return supportCombination;        
+            return new Combination(supportCombination);        
     }
 
-    isColorImArray(color){
-        for(let i = 0; i < this.winCombination.length; i++){
-            if(this.winCombination[i] === color){
+    isColorInArray(color){
+        for(let i = 0; i < this.winCombination.getLength(); i++){
+            if(this.winCombination.getColor(i) === color){
                 return true;
             }
         }
@@ -778,45 +807,45 @@ class SecretCodeManager{
     }
 
     printCombination(){
-        console.log(this.winCombination[0] + " " + 
-                    this.winCombination[1] + " " + 
-                    this.winCombination[2] + " " + 
-                    this.winCombination[3] + " " + 
-                    this.winCombination[4]);
+        console.log(this.winCombination.print());
     }
 }
 
 class Mastermaind{
     constructor(){
+        this.turn;
         this.player; 
         this.gameLogic; 
         this.secretCodeManager;
     }
 
     init(){
-        const playerType = this.getTypesPlayers();
+        const playerType = this.getTypePlayer();
         this.secretCodeManager = new SecretCodeManager();
         this.player = new PlayerM(playerType, this.secretCodeManager);
-        this.gameLogic = new GameLogicM(this.player, this.secretCodeManager);
-        this.gameLogic.init();  
+        this.turn = new TurnM(this.player);
+        this.gameLogic = new GameLogicM();
 
         do {
-            this.gameLogic.generatePlayerCombination();
-            this.gameLogic.guessCode();
+            const inputCombination = this.player.getMove();
+            this.gameLogic.guessCode(this.secretCodeManager, inputCombination);
+            if(!this.gameLogic.playerWin()){
+                this.turn.next(this.gameLogic);
+            }
         } while (!this.gameLogic.gameEnd()); // nor, si las dos son falsas repite bucle
         this.gameLogic.printMessageEndGame();
     }
 
-    getTypesPlayers(){
+    getTypePlayer(){
         const PLAYER_TYPES = ["JUGADOR", "MAQUINA"];
-        let answerd;
+        let answer;
         let isAnswerdValid;
         do{
-            answerd = parseInt(prompt('JUGADOR ELIGE :1 \nMAQUINA ELIGE: 2'));
-            isAnswerdValid = answerd === 1 || answerd === 2;
+            answer = parseInt(prompt('JUGADOR ELIGE :1 \nMAQUINA ELIGE: 2'));
+            isAnswerdValid = answer === 1 || answer === 2;
         }while(!isAnswerdValid)
 
-        return PLAYER_TYPES[answerd - 1];
+        return PLAYER_TYPES[answer - 1];
     }
 }
 

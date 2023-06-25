@@ -51,8 +51,6 @@ function createdBoard(files, columns){
     }   
 }
 
-//TODO: Falta refactoriazar a factoria la funcion board.
-
 function createGame(){
     let game = {
         nPlayers: 2,
