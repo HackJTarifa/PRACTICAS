@@ -241,7 +241,7 @@ class Tictactoe{
     }
 
     printMessageEndGame(playerName){
-        this.turn.isWinner() ?  console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO"):
+        this.turn.win() ?  console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO"):
                     console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
     }
 
