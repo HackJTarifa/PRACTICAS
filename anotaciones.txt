@@ -1,0 +1,9 @@
+falta modificaciones nuevas clase vista
+
+Vista{
+    constructor(){
+        this.game = game;
+    }    
+}
+
+se tiene que separar las vistas, In, Out del modelo para los tres juegos.

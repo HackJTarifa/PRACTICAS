@@ -1,8 +1,3 @@
-let name = prompt('Introduce tu nombre: ');
-let age = prompt('Introduce tu edad: ');
-
-document.writeln(`<br\> Hola mundo ${name} tienes ${age} y que te den  <br\>`);
-console.log("Hello world!");
 
 let respuesta;
 const playAgain = 'SI';

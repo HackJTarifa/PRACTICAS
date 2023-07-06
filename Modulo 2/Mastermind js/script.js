@@ -1,5 +1,4 @@
 
-
 do{
 
     let mov_restantes = 15;

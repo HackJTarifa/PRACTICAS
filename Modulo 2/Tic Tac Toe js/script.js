@@ -101,11 +101,11 @@ function getFile(){
         }else{
             console.log("FILA: SOLO SE ACEPTAN VALOES NUMERICOS ENTRE EN 1 Y EL 3");
         }
-   }while(incorrectFile)   
+    }while(incorrectFile)   
 
-   let offset = 1;
-   console.log(file);
-   return file - offset;
+    let offset = 1;
+    console.log(file);
+    return file - offset;
 }
 
 function getColumn(){
