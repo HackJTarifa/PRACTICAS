@@ -13,6 +13,10 @@ class ViewT{
         return parseInt(prompt('JUGADOR VS JUGADOR ELIGE :1 \nJUGADOR VS MAQUINA ELIGE: 2 \nMAQUINA VS MAQUINA: ELIGE : 3'));
     }
 
+    printStartGame(){
+        console.log("EL JUEGO TIC TAC TOE A COMENZADO");
+    }
+
     printBoardState(boarState){
         console.log("      ");
         console.log("-------------");
@@ -307,7 +311,7 @@ class Tictactoe{
     }
 
     init(){
-        console.log(" INICIA EL JUEGO TIC TAC TOE ");       
+        this.view.printStartGame();    
         this.initialValues(); 
         this.view.printBoardState(this.board.getState());
 
@@ -347,21 +351,55 @@ class Tictactoe{
 }
 
 // ---------- CONNECTA 4 ----------
-//TODO: falta modificacion de view del juego connecta 4
-//TODO: falta la correccion de errores, y el testeo de todos los juegos.
-class ViewC{}
+
+class ViewC{
+    promptColumn(){
+        parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));  
+    }
+
+    promptPlayersModes(){
+        return parseInt(prompt('JUGADOR VS JUGADOR ELIGE :1 \nJUGADOR VS MAQUINA ELIGE: 2 \nMAQUINA VS MAQUINA: ELIGE : 3'));
+    }
+
+    printError(error){
+        const errors ={
+            ErrorColumnNaN: "El valor ingresado no es un número.",
+            ErrorColumnUndefined: "No se ha ingresado ningún valor.",
+            ErrorColumnOutRange: "el valor ingresado esta fuera de rango, 1...7.",
+            ErrorColumnFull: "La columna elegida no es valida pues esta llena.",
+            ErrorInvalidOption: "El valor introducido o la opcioón elegidano es valida, solo se acepta 1 o 2 o3."
+        }
+        console.log(errors[error]);
+    }
+
+    printBoardState(boardState){
+        console.log("     ");
+        for(let i = 0; i < boardState.length; i++){
+            console.log(boardState[i]);
+        }
+        console.log("     ");
+    }
+
+    printMessageEndGame(playerName, isWinner){
+        isWinner ?  console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO"):
+                    console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
+    }
+}
 
 class DataInputC{
-    constructor(board){
+    constructor(board, view){
         this.board = board;
+        this.view = view;
     }
 
     callEnterDataByFunction(playerType){
+        const view = this.view;
         const board = this.board;
+
         const getColumn = function(){
             let column;
             do{ 
-                column = parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));         
+                column = view.promptColumn();        
                 column -= 1;
             }while(!board.isPositionValid(column)) 
             return column;
@@ -388,7 +426,8 @@ class DataInputC{
 }
 
 class BoardC{
-    constructor(rowns, columns){
+    constructor(rowns, columns, view){
+        this.view = view;
         this.ROWNS = rowns; // 6
         this.COLUMNS = columns; // 7
         this.boardState = this.inicializeBoard(this.ROWNS, this.COLUMNS);
@@ -424,25 +463,28 @@ class BoardC{
     }
 
     isPositionValid(column){
-        const isValidPos = typeof column === 'number' && !isNaN(column) && column !== undefined;
-        if(!isValidPos){
-            console.log("ERROR EN EL VALOR INGRESADO, VALOR NULO, O NO ES UN NUMERO");
+        if(isNaN(column)){
+            this.view.printError("ErrorColumnNaN");
+            return false;
+        }
+
+        if(column === undefined){
+            this.view.printError("ErrorColumnUndefined");
             return false;
         }
 
         const isValidColumn = column >= 0 && column <= this.COLUMNS - 1;
         if(!isValidColumn){
-            console.log("LA POSICION ELEGIDA ESTA FUERA DE RANGO 1...7");
+            this.view.printError("ErrorColumnOutRange");
             return false;
         }
 
-        let emptyPosition = false;
         for(let i = 0; i < this.ROWNS; i++){ 
             if(this.boardState[column][i] === "0"){
                 return true;                
             }
         }
-        console.log("LA COLUMNA ELEGIDA NO ES VALIDA, ESTA LLENA.");        
+        this.view.printError("ErrorColumnFull");
         return false;
     }
 
@@ -453,13 +495,6 @@ class BoardC{
         }    
         this.boardState[col][row] = tokenState;
         this.aviableCells -= 1;
-    }
-
-    print(){
-        for(let i = 0; i < this.COLUMNS; i++){
-            console.log(this.boardState[i]);
-        }
-        console.log(" ");
     }
 }
 
@@ -588,11 +623,6 @@ class GameLogicC{
         }
         return false;
     }
-
-    printMessageEndGame(playerName){
-        this.win ?  console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO"):
-                    console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
-    }
 }
 
 class Connecta4{
@@ -605,6 +635,7 @@ class Connecta4{
     }
 
     initialValues(){
+        this.view = new ViewC();
         this.board = new BoardC(this.ROWNS, this.COLUMNS);
         this.gameLogic = new GameLogicC();
         this.turn = new TurnC(this.createPlayersByMode(), this.gameLogic, this.board);
@@ -614,14 +645,15 @@ class Connecta4{
         console.log(" INICIA EL JUEGO CONNECTA 4 ");
         this.initialValues();
         this.board.print();
+        this.view.printBoardState(this.board.getState());
 
         do {
             this.turn.makeMove(this.board);
             if(!this.turn.isWinner()){
                 this.turn.next(this.gameLogic);
             }            
-        } while (!this.turn.gameEnd()); 
-        this.gameLogic.printMessageEndGame(this.turn.getCurrentPlayer().getName());
+        } while (!this.turn.gameEnd());        
+        this.view.printMessageEndGame(this.turn.getCurrentPlayer().getName(), this.turn.isWinner());
     }
 
     createPlayersByMode(){
@@ -630,8 +662,11 @@ class Connecta4{
         let answer;
         let isAnswerdValid;
         do{
-            answer = parseInt(prompt('JUGADOR VS JUGADOR ELIGE :1 \nJUGADOR VS MAQUINA ELIGE: 2 \nMAQUINA VS MAQUINA: ELIGE : 3'));
+            answer = this.view.promptPlayersModes();
             isAnswerdValid = answer === 1 || answer === 2 || answer === 3;
+            if(!isAnswerdValid){
+                this.view.printError("ErrorInvalidOption");
+            }
         }while(!isAnswerdValid)
 
 
@@ -645,37 +680,6 @@ class Connecta4{
                             [new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[0], "PLAYER 1", this.board),
                             new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2", this.board)]];
         return GAME_MODES[answer - 1];
-    }
-
-    gameEnd() {
-        return this.win || this.board.isFull();
-    }
-
-    printTablero(){
-        this.board.print();
-    }
-
-    getColumn(){
-        let column;
-        do{ 
-            column = parseInt(prompt("Agrega una posicion valida del tablero, columna 1...7"));
-            column -= 1;
-        }while(!(column >= 0 && column < 7))        
-        return column;
-    }
-
-    getRandomColumn(){
-        const MAX_COLUMN = 7;
-        return Math.floor(Math.random() * MAX_COLUMN);
-    }
-
-    printMessageEndGame(playerName){
-        const PLAYERS = ["PLAYER 1", "PLAYER 2"];
-        if (this.win){
-            console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO");
-        }else{
-            console.log("NO HAY MAS MOVIMIENTOS POSIBLES, EMPATE");
-        }
     }
 }
 
@@ -699,8 +703,8 @@ class ViewM{
         console.log("El color: " + color + " no esta dentro del rango de colores permitodos.");
     }    
 
-    printMessageEndGame(winner){
-        this.gameLogic.isWinner()?
+    printMessageEndGame(isWinner){
+        isWinner?
             console.log("ENORABUENA EL JUGAODR HA GANADO"):
             console.log("NO HAY MAS MOVIMIENTOS POSIBLE, HAS PERDIDO");        
     }
@@ -718,7 +722,7 @@ class ViewM{
     }
 
     printMessageLessMoviments(lessMoviments){
-        console.log(" MOVIMIENTOS RESTANTES: " + lessMoviments.getLessMoviments());
+        console.log(" MOVIMIENTOS RESTANTES: " + lessMoviments);
     }
 }
 
@@ -771,19 +775,20 @@ class DataInputM{
     }
 
     callEnterDataByFunction(playerType){
+        const self = this;
         const secretCodeManager = this.secretCodeManager;
 
-        const getCombinationPlayer = function(){
+        const getCombinationPlayer = function(self){
             let inputCombination;
             
             do{                     
-                let colors = this.view.promptColorsCombination();
+                let colors = self.view.promptColorsCombination();
                 inputCombination = new Combination(colors.split(' '));
             }while(!secretCodeManager.isValidCombination(inputCombination))
             return inputCombination;
         }
         
-        const getRandomTirada = function(){
+        const getRandomTirada = function(self){
             let colorsRandomTirada = new Combination();
             const N_COLORS = 5;
             const N_DIFERENT_COLORS = secretCodeManager.getValidColorsLength();
@@ -798,7 +803,7 @@ class DataInputM{
         const modes ={"JUGADOR": getCombinationPlayer,
                     "MAQUINA": getRandomTirada};
 
-        return modes[playerType]();
+        return modes[playerType](self);
     }
 
     getInput(playerType){
@@ -900,7 +905,7 @@ class SecretCodeManager{
         this.view = view;
         this.validColors = new Combination(["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"]);
         this.winCombination = this.generateCombination();
-        this.winCombination.print();
+        this.view.printCombination(this.winCombination);
     }
 
     getValidColorsLength(){
@@ -965,13 +970,14 @@ class SecretCodeManager{
 class Mastermaind{
     constructor(){
         this.view = new ViewM();
-        this.secretCodeManager = new SecretCodeManager(); 
-        this.player = this.createPlayerByMode();
+        this.secretCodeManager = new SecretCodeManager(this.view); 
+        this.player = this.createPlayerByMode(this.view);
         this.gameLogic = new GameLogicM(this.view);
         this.turn = new TurnM(this.player, this.secretCodeManager, this.gameLogic, this.view);
     }
 
     init(){
+        console.log("HELLO WORLD SI ESTO ESTA DONDE NO DEBE ERROR");
         do{
             this.turn.makeMove();
             if(!this.turn.isWinner()){
@@ -983,16 +989,20 @@ class Mastermaind{
     }
 
     createPlayerByMode(){
+        const self = this;
         const PLAYER_MODES = [new PlayerM("JUGADOR", this.secretCodeManager, this.view),
                             new PlayerM("MAQUINA", this.secretCodeManager, this.view)]
-        return PLAYER_MODES[getPlayerModeInput() - 1];
+        return PLAYER_MODES[getPlayerModeInput(self) - 1];
 
-        function getPlayerModeInput() {
+        function getPlayerModeInput(self) {
             let answer;
             let isAnswerdValid;
             do {
-                answer = this.view.promptChoisePlayerType();
+                answer = self.view.promptChoisePlayerType();
                 isAnswerdValid = answer === 1 || answer === 2;
+                if(!isAnswerdValid){
+                    self.view.printError("ErrorInvaidOption");
+                }
             } while (!isAnswerdValid);
             return answer;
         }
@@ -1015,8 +1025,14 @@ class viewApp{
         console.log("EL JUEGO SELECCIONADO HA SIDO: " + gameSelected)
     }
 
-    printError(){
-        console.log("Error: LA RESPUESTA NO ES VALIDA SOLO SE ACEPTA (SI/NO)")
+    printError(error){
+        const errors = {
+            ErrorInvaidOption: "El valor ingresadod no es valido, solo se acepta valores 1 o 2 o 3. ",
+            ErrorPlayAgainOption: "Error: LA RESPUESTA NO ES VALIDA SOLO SE ACEPTA (SI/NO)",
+            ErrorChooseGame: "El valor introducino no es valido solo se acepta valores 1 o 2 o 3."
+        }
+
+        console.log(errors[error]);
     }
 
     printMessageEndGame(){
@@ -1038,6 +1054,7 @@ class App{
     start(){
         do{
             this.game = this.selectGame();
+            console.log("fuera de this.game");
             do{
                 this.game.init();
             }while(this.playAgain("keepPlayingSameGame"))    
@@ -1046,20 +1063,34 @@ class App{
         this.view.printMessageEndApp();
     }
 
-    chooseGame(){
+    selectGame(){
+        const NAME_GAMES = ["Mastermind", "Connect 4", "Tic Tac Toe"];
+
         let selectedGame;
+        let isValid = false;
         do{
             selectedGame = this.view.promptSelectGame();
-        }while(!(selectedGame === 1 || selectedGame === 2 || selectedGame === 3));
-        return selectedGame;
-    }
-
-    selectGame(){
-        const GAMES = [new Mastermaind(), new Connecta4(), new Tictactoe()];        
-        const NAME_GAMES = ["Mastermind", "Connect 4", "Tic Tac Toe"];
-        const indexGame = this.chooseGame();
-        this.view.printGameSeleted(NAME_GAMES[indexGame]);
-        return GAMES[indexGame - 1];
+            console.log("selected game0: " + selectedGame);
+            isValid = selectedGame === 1 || selectedGame === 2 || selectedGame === 3;
+            if(!isValid){
+                view.printError("ErrorChooseGame");
+            }
+            console.log("selected game1: " + selectedGame);
+        }while(!isValid);
+        console.log("selected game2: " + selectedGame);
+        this.view.printGameSeleted(NAME_GAMES[selectedGame]);
+        console.log("selected game3: " + selectedGame);
+        
+        switch(selectedGame){
+            case 1:
+                return new Mastermaind();
+            case 2:
+                return new Connecta4();
+            case 3:
+                return new Tictactoe();
+            default:
+                return null; 
+        }
     }
 
     playAgain(message){
@@ -1070,13 +1101,12 @@ class App{
             restardGame = restardGame.toUpperCase();
             isAnswerValid = restardGame === 'SI' || restardGame === 'NO';
             if (!isAnswerValid){
-                this.view.printError();
+                this.view.printError("ErrorPlayAgainOption");
             }
         }while(!isAnswerValid)
     
         return restardGame === 'SI'; 
     }
-
 }
 
 let app = new App()

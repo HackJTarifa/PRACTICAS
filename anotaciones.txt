@@ -1,9 +1,21 @@
-falta modificaciones nuevas clase vista
 
-Vista{
-    constructor(){
-        this.game = game;
-    }    
-}
 
-se tiene que separar las vistas, In, Out del modelo para los tres juegos.
+
+VERSIÓN 16: SEPARACIÓN DE LAS ENTRADAS Y SALIDAS, CREACIÓN DE LAS CLASES VIEW. 
+    .   CREACIÓN: Se han creado cuatro clases de que se encargan de gestionar las entradas y salidas de cada juego.
+    .   CAMBIOS: Se ha modificado la clase App, donde se ha sustituido un array con la intanciacion de las clases de lo jueogos por
+        un swhich, debido, a que el array instaciava las clases y suporgo que por el constructor se me reclamava si queria
+        que jugara el jugador o la maquina antes de elegir el jueogo.
+    .   CAMBIOS: Se ha eleminado varias funciones de la clase Tictactoe, pues ese codigo se habia modivido a otras clases, donde 
+        tenia mas sentido.
+    .   ANOTACIÓN. Las clases internas de otras clases son un dolor de cabeza si necesitan acceder a las variables externas
+        de la clase que las envuelbe.
+    .   ANOTACIÓN: los tipos son un dolor de cabeza, al modificar o cambiar de lugar un método de una clase, es bastante
+        habitual tener que corregir errors y es vastante habitual no tener conocimiento del typo de variable que estas
+        recibiendo como parametro, las buenas practicas indican que una variable, un nombre, un typo pero, conforme el código
+        se amplia y tenemos mas partes, se hace mas dificil segir esta regla, ya que con el alcance de las variables Y
+        el nombre resulta muy útil repetirlas.
+    .   ANOTACIÓN: Hay demasiadas clases, se agruparon los tres proyectos para facilitar el debugger y la modificación, 
+        pero ahora se necesita modificar el codigo y separarlo por modulos.
+VERSIÓN 17:
+
