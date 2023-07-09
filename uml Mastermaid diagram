@@ -1,0 +1,98 @@
+@startuml
+!theme vibrant
+
+skin rose
+
+title Classes - Class Diagram
+
+class Masteremaid{
+    +ViewM view
+    +SecretCodeManager secretCodeManager
+    +PlayerM player
+    +GameLogic gameLogic
+    +void init()
+    +PlayerM createPlayerByMode()  
+}
+
+class SecretCodeManager{
+    +ViewM view
+    +Combiantion validColors
+    +Combination winCombination
+    +Int getValidColorsLength()
+    +String[] getValidColors()
+    +Combination generateCombination()
+    +boolean inWinningCombination(Combination combination)
+    +boolean isLenghtEqual(Combination combination)
+    +boolean isValidCombination(Combination combination)
+    +Combination checkCombinationColorStatus(Combination combination)
+}
+
+class GameLogic{
+    +ViewM view
+    +Int maxTurns
+    +Combination[] combinacionesPropuestas
+    +Combination[] combinationColorStatus
+    +Int getLessMoviments()
+    +void gessCode(Combination secretCodeManager, Combination inputCombination)
+    +void lessMoviments()
+    +boolean isWinner()
+    +boolean gameEnd()
+    +void updateHistorial(Combination colorMachStatus, Combination inputCombination)
+}
+
+class TurnM{
+    +PlayerM player
+    +SecretCodeManager secretCodeManager
+    +GameLogic gameLogic
+    +ViewM view
+    +Player getCurrentPlayer()
+    +void makeMove()
+    +void next()
+    +void isWinner()
+    +Boolean gameEnd() 
+}
+
+class PlayerM{
+    +Playertype playerType
+    +Srting name
+    +DataInputM dataInput
+    +String getName()
+    +DataInputM getMove()
+}
+
+class DataInputM{
+    +SecretCodeManager secretCodeManager
+    +ViewM view
+    -FuntionTypeIO callEnterDataFuntion(Playertype playerType)
+    +FuntionTypeIO getInput(Playertype playerType)
+}
+
+class Combination{
+    +String[] colors
+    +void add(color)
+    +boolean isEquals(Sting[] combination)
+    +boolean contains(String color)
+    +boolean isSameColor(String color, Int index)
+    +Int getLenght()
+    +Srting getColor(index)
+}
+
+class ViewM{
+    +String promptColorsCombination()
+    +String promptChoisePlayerType()
+    +void printError(String error)
+    +void printMessageColorNoValid(String color)
+    +void printMessageEndGame(isWinner)
+    +printCombination(String[] colors)
+    +void printSeparador()
+    +void printMessageLessMoviments(Int lessMoviments)
+}
+
+PlayerM *-- DataInputM
+Masteremaid .. ViewM
+SecretCodeManager .. ViewM
+GameLogic .. ViewM
+TurnM .. ViewM
+DataInputM .. ViewM
+
+@enduml

@@ -731,6 +731,7 @@ class Combination{
         this.colors = colors;
     }
     
+    //TODO: el nombre es incosistente, no matien la logica que menor confusion, modificar add por push
     add(color){
         this.colors.push(color);
     }
@@ -806,6 +807,8 @@ class DataInputM{
         return modes[playerType](self);
     }
 
+    //TODO: la clase no proporciona ninguna funcionalidad a parte de llama a la clase que hace el trabajo
+    //TODO: unir las dos clases en una.
     getInput(playerType){
         return this.callEnterDataByFunction(playerType);
     }
@@ -822,11 +825,15 @@ class PlayerM{
         return this.NAME;
     }
 
+    //TODO: posible incosistencia, la case devuelve un string? o una clase DataInputM?, la llamada a la función tiene que
+    //TODO: que ser con get, esperamos un valor o variable, o esperamos la creacion de una clase aunque al final es parecido. 
     getMove(){
         return this.dataInput.getInput(this.PLAYER_TYPE);
     }
 }
 
+
+//TODO: incosistencia en el nombre combinaciones propuestas, modificar a nombre en ingles.
 class GameLogicM{
     constructor(view){
         this.view = view;
@@ -836,6 +843,7 @@ class GameLogicM{
         this.win = false; 
     }
 
+    //TODO: revisar el nombre por otro mas adecuado.
     getLessMoviments(){
         return this.maxTurns;
     }
@@ -854,10 +862,13 @@ class GameLogicM{
         return this.win;
     }
 
+    //TODO: incosistencia en el nombre se espera un boleano pero el nombre de la función no lo indica.
     gameEnd(){
         return this.win || this.maxTurns <= 0;
     }
 
+    //TODO: no mantiene la coerencia en el nombre, pues se usa uno diferente al llama a la funcion y otro en la funcion.
+    //TODO: no mantiene la coerencia en el nombre de la función pues parte esta en castellano.
     updateHistorial(colorMatchStatus, inputCombination){
         this.combinacionesPropuestas.push(inputCombination);
         this.combinationColorStatus.push(colorMatchStatus);
@@ -891,10 +902,13 @@ class TurnM{
         this.gameLogic.lessMoviment();
     }
 
+    //TODO: el nombre es inconsistente y no mantiene la estructura logica de todo el programa, pues usa is y no
+    //TODO: Y no devuelve nada
     isWinner(){
         this.gameLogic.isWinner()
     }
 
+    //TODO: modificar nobre gameEnd() por isGameEnd()
     gameEnd(){
         return this.gameLogic.gameEnd();
     }
@@ -907,6 +921,7 @@ class SecretCodeManager{
         this.winCombination = this.generateCombination();
         this.view.printCombination(this.winCombination);
     }
+    //TODO: incosistencia en el código, revisar la idoneidad de una funcion dentro del constructor.
 
     getValidColorsLength(){
         return this.validColors.getLength();
@@ -916,6 +931,7 @@ class SecretCodeManager{
         return this.validColors;
     }
 
+    //TODO: incosistencia en el código, la funcion devuelve una nueva funcion pero no queda claro con el nombre
     generateCombination(){
         let winCombination = new Combination();
         do{
@@ -951,6 +967,7 @@ class SecretCodeManager{
         return true;    
     }
 
+    //TODO: incosistenca en el nombre, la función implica un chequeo pero devuelve una nueva combinación 
     checkCombinacionColorStatus(combination){
             let supportCombination = new Combination();
             for(let i = 0; i < combination.getLength(); i++){
