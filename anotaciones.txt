@@ -3,19 +3,22 @@
 
 VERSIÓN 16: SEPARACIÓN DE LAS ENTRADAS Y SALIDAS, CREACIÓN DE LAS CLASES VIEW. 
     .   CREACIÓN: Se han creado cuatro clases de que se encargan de gestionar las entradas y salidas de cada juego.
-    .   CAMBIOS: Se ha modificado la clase App, donde se ha sustituido un array con la intanciacion de las clases de lo jueogos por
-        un swhich, debido, a que el array instaciava las clases y suporgo que por el constructor se me reclamava si queria
-        que jugara el jugador o la maquina antes de elegir el jueogo.
-    .   CAMBIOS: Se ha eleminado varias funciones de la clase Tictactoe, pues ese codigo se habia modivido a otras clases, donde 
-        tenia mas sentido.
+    .   CAMBIOS: Se ha modificado la función que comprueba si hay cuatro en raya, ahora en vez de comprobar todas las casillas, solo comprueba las del último movimiento.
+    .   CAMBIOS: Se ha modificado la clase App, donde se ha sustituido un array con la instanciación de las clases de los juegos por
+        un switch, debido, a que el array instanciada las clases y supongo que por el constructor se me reclamaba si quería
+        que jugara el jugador o la maquina antes de elegir el juego.
+    .   CAMBIOS: Se ha eliminado varias funciones de la clase Tictactoe, pues ese código se había movido a otras clases, donde 
+        tenía mas sentido.        
+        CAMBIOS: En la clase Mastermaind se ha extraído la creación de clases del constructor, porque cuando se volvía a jugar el mismo juego, este mantenía el estado del juego anterior.
     .   ANOTACIÓN. Las clases internas de otras clases son un dolor de cabeza si necesitan acceder a las variables externas
-        de la clase que las envuelbe.
+        de la clase que las envuelve.
     .   ANOTACIÓN: los tipos son un dolor de cabeza, al modificar o cambiar de lugar un método de una clase, es bastante
-        habitual tener que corregir errors y es vastante habitual no tener conocimiento del typo de variable que estas
-        recibiendo como parametro, las buenas practicas indican que una variable, un nombre, un typo pero, conforme el código
-        se amplia y tenemos mas partes, se hace mas dificil segir esta regla, ya que con el alcance de las variables Y
+        habitual tener que corregir errores y es bastante habitual no tener conocimiento del tipo de variable que estas
+        recibiendo como parámetro, las buenas prácticas indican que una variable, un nombre, un tipo, pero conforme el código
+        se amplia y tenemos mas partes, se hace mas difícil seguir esta regla, ya que con el alcance de las variables Y
         el nombre resulta muy útil repetirlas.
     .   ANOTACIÓN: Hay demasiadas clases, se agruparon los tres proyectos para facilitar el debugger y la modificación, 
-        pero ahora se necesita modificar el codigo y separarlo por modulos.
-VERSIÓN 17:
-
+        pero ahora se necesita modificar el código y separarlo por módulos.
+    .   ANOTACIÓN: Las clases que separan la vista están fuertemente acopladas al modelo, se ha de modificar todo el código, para que los modelos no conozcan a las vistas.
+VERSIÓN 17: SEPARACIÓN DE LAS ENTRADAS Y SALIDAS DEL MODELO, EL MODELOS DESCONOCE LA VISTA.
+    .   ANOTACIÓN: Se ha escogido la versión 15 como base, donde se ha modificado la función de comprobación de cuatro en raya.

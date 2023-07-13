@@ -79,16 +79,16 @@ class DataInputT{
         this.board = board;
     }
 
-    callEnterDataByFunction(playerType){
-        this.view = view;
+    getInputCoordinateByFunction(playerType){    
+        const view = this.view;
         const board = this.board;
         let inputCell;
 
         const getFileColumn = function () {
             let inputRow, inputColumn;
             do{
-                inputRow = this.view.promptRown();
-                inputColumn = this.view.promptColumn();
+                inputRow = view.promptRown();
+                inputColumn = view.promptColumn();
                 inputRow -= 1;
                 inputColumn -= 1;
                 inputCell = new Cell(inputRow, inputColumn);
@@ -96,11 +96,12 @@ class DataInputT{
             return inputCell;
         }
 
+        //row column
         const getRandomPosition = function(){ 
             let validPositions = [];
             for(let i = 0; i < board.getFilesLength(); i++){             
                 for (let j = 0; j < board.getColumnsLength(); j++){
-                    if (board.isPositionValid(i, j)){
+                    if (board.isPosititionValid(new Cell(i, j))){
                         validPositions.push({row: i, column: j});
                     }
                 }
@@ -134,7 +135,7 @@ class PlayerT{
     }
 
     getMove(){
-        return this.dataInput.callEnterDataByFunction(this.playerType);
+        return this.dataInput.getInputCoordinateByFunction(this.playerType);
     }
 }
 
@@ -148,14 +149,14 @@ class GameLogicT{
     }
 
     gessCombination(board, player){
-        this.win = this.playerWin(board, player);
+        this.win = this.isTicTacToe(board, player);
     }
 
-    gameEnd(board){
+    isGameEnd(board){
         return this.win || board.isFull();
     }
 
-    playerWin(board, player){
+    isTicTacToe(board, player){
         if(board.getPosition(0, 0) == player.getToken() && board.getPosition(0,1) == player.getToken() && board.getPosition(0,2) == player.getToken() ||
             board.getPosition(1, 0) == player.getToken() && board.getPosition(1,1) == player.getToken() && board.getPosition(1,2) == player.getToken() ||
             board.getPosition(2, 0) == player.getToken() && board.getPosition(2,1) == player.getToken() && board.getPosition(2,2) == player.getToken() ||
@@ -202,8 +203,8 @@ class TurnT{
         return this.gameLogic.isWinner();
     }
 
-    gameEnd(){
-        return this.gameLogic.gameEnd(this.board);
+    isGameEnd(){
+        return this.gameLogic.isGameEnd(this.board);
     }
 }
 
@@ -212,7 +213,7 @@ class BoardT{
         this.view = view;
         this.rows = rows;
         this.columns = columns;
-        this.boardState = this.inicializeTablero(this.rows, this.columns);
+        this.boardState = this.createEmptyBoard(this.rows, this.columns);
         this.availableCells = 9;
     }
 
@@ -228,7 +229,7 @@ class BoardT{
         return this.columns;
     }
 
-    inicializeTablero(rows, columns){
+    createEmptyBoard(rows, columns){
         const initialValue = "0";
         let board = [];
         for(let i = 0; i < rows; i++){
@@ -272,12 +273,12 @@ class BoardT{
             return false;
         }
 
-        if(row >= 0 && row <= 2){
+        if(row < 0 || row > 2){
             this.view.printError("ErrorRowOutRange");
             return false;
         }
 
-        if(column >= 0 && column <= 2){
+        if(column < 0 || column > 2){
             this.view.printError("ErrorColumnOutRange");
             return false;
         }
@@ -303,7 +304,7 @@ class Tictactoe{
         this.turn = NaN;
     }
 
-    initialValues(){
+    initializeValues(){
         this.view = new ViewT();
         this.board = new BoardT(3, 3, this.view);
         this.gameLogic = new GameLogicT();
@@ -311,8 +312,8 @@ class Tictactoe{
     }
 
     init(){
+        this.initializeValues(); 
         this.view.printStartGame();    
-        this.initialValues(); 
         this.view.printBoardState(this.board.getState());
 
         do{
@@ -320,33 +321,40 @@ class Tictactoe{
             if(!this.turn.isWinner()){
                 this.turn.next();
             }
-        }while(!this.turn.gameEnd())
+        }while(!this.turn.isGameEnd())
         this.view.printMessageEndGame(this.turn.isWinner(), this.turn.getCurrentPlayer().getName());
     }
 
     createPlayersByMode(){
         const TOKEN_STATE = ['X', 'Y'];
         const PLAYERS = ["JUGADOR", "MAQUINA"];
-        let playersModes;
-        let isValid;
-        do{
-            playersModes = this.view.promptPlayersModes();
-            isValid = playersModes === 1 || playersModes === 2 || playersModes === 3;
-            if(!isValid) {
-                this.view.printError("ErrorChoisePlayesModes");
-            }
-        }while(!isValid)
+        const view = this.view;
+        let playersModes = getPlayesModes(view);
 
-        const GAME_MODES = [[new PlayerT(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1", this.board),
-                            new PlayerT(TOKEN_STATE[1], PLAYERS[0], "PLAYER 2", this.board)],
+        const GAME_MODES = [[new PlayerT(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1", this.board, this.view),
+                            new PlayerT(TOKEN_STATE[1], PLAYERS[0], "PLAYER 2", this.board, this.view)],
                             
-                            [new PlayerT(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1", this.board),
-                            new PlayerT(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2", this.board)],
+                            [new PlayerT(TOKEN_STATE[0], PLAYERS[0], "PLAYER 1", this.board, this.view),
+                            new PlayerT(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2", this.board, this.view)],
                             
-                            [new PlayerT(TOKEN_STATE[0], PLAYERS[1], "PLAYER 1", this.board),
-                            new PlayerT(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2", this.board)]];
+                            [new PlayerT(TOKEN_STATE[0], PLAYERS[1], "PLAYER 1", this.board, this.view),
+                            new PlayerT(TOKEN_STATE[1], PLAYERS[1], "PLAYER 2", this.board, this.view)]];
 
         return GAME_MODES[playersModes - 1];        
+
+
+        function getPlayesModes(view) {
+            let playersModes;
+            let isValid;
+            do {
+                playersModes = view.promptPlayersModes();
+                isValid = playersModes === 1 || playersModes === 2 || playersModes === 3;
+                if (!isValid) {
+                    view.printError("ErrorChoisePlayesModes");
+                }
+            } while (!isValid);
+            return playersModes;
+        }
     }    
 }
 
@@ -354,7 +362,7 @@ class Tictactoe{
 
 class ViewC{
     promptColumn(){
-        parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));  
+        return parseInt(prompt("Agrega una posicion valida del tablero, columna 1 ... 7"));  
     }
 
     promptPlayersModes(){
@@ -373,7 +381,7 @@ class ViewC{
     }
 
     printBoardState(boardState){
-        console.log("     ");
+        console.log("    ");
         for(let i = 0; i < boardState.length; i++){
             console.log(boardState[i]);
         }
@@ -384,6 +392,10 @@ class ViewC{
         isWinner ?  console.log("ENORABUENA EL JUGADOR: " + playerName + " HA GANADO"):
                     console.log("NO HAY MAS MOVIMIENTOS POSIBLE, EMPATE");        
     }
+
+    printStartGame(){
+        console.log(" INICIA EL JUEGO CONNECTA 4 ");
+    }
 }
 
 class DataInputC{
@@ -392,10 +404,9 @@ class DataInputC{
         this.view = view;
     }
 
-    callEnterDataByFunction(playerType){
+    getInputCombination(playerType){
         const view = this.view;
         const board = this.board;
-
         const getColumn = function(){
             let column;
             do{ 
@@ -419,9 +430,25 @@ class DataInputC{
 
         return modes[playerType]();   
     }
+}
 
-    getInput(playerType){
-        return this.callEnterDataByFunction(playerType);
+class LastMoviment{
+    constructor(row, column, token){
+        this.row = row;
+        this.column = column;
+        this.token = token;
+    }
+
+    getRow(){
+        return this.row;
+    }
+
+    getColumn(){
+        return this.column;
+    }
+
+    getToken(){
+        return this.token;
     }
 }
 
@@ -430,19 +457,28 @@ class BoardC{
         this.view = view;
         this.ROWNS = rowns; // 6
         this.COLUMNS = columns; // 7
-        this.boardState = this.inicializeBoard(this.ROWNS, this.COLUMNS);
+        this.boardState = this.createEmptyBoard(this.ROWNS, this.COLUMNS);
         this.aviableCells = this.ROWNS * this.COLUMNS;
+        this.lastMoviment = NaN;
     }
 
-    rowsLength(){
+    getState(){
+        return this.boardState;
+    }
+
+    getLastMoviment(){
+        return this.lastMoviment;
+    }
+
+    getRowsLength(){
         return this.ROWNS;
     }
 
-    columnsLength(){
+    getColumnLength(){
         return this.COLUMNS;
     }
 
-    inicializeBoard(rowns, columns){    
+    createEmptyBoard(rowns, columns){    
         const intialValue = "0";
         let board = [];
         for(let i = 0; i < columns; i++){
@@ -454,7 +490,7 @@ class BoardC{
         return board;
     }
 
-    gePosition(column, row){
+    getPosition(column, row){
         return this.boardState[column][row];
     }
 
@@ -488,22 +524,24 @@ class BoardC{
         return false;
     }
 
-    update(col, tokenState){
+    update(column, tokenState){
         let row = 0;     
-        while(this.boardState[col][row] !== "0"){
+        while(this.boardState[column][row] !== "0"){
             row += 1;
-        }    
-        this.boardState[col][row] = tokenState;
+        }   
+
+        this.boardState[column][row] = tokenState;
+        this.lastMoviment = new LastMoviment(row, column, tokenState); 
         this.aviableCells -= 1;
     }
 }
 
 class PlayerC{
-    constructor(playerType, token, name, board){
+    constructor(playerType, token, name, board, view){
         this.TOKEN = token
         this.playerType = playerType        
         this.NAME = name;
-        this.dataInput = new DataInputC(board);
+        this.dataInput = new DataInputC(board, view);
     }
     
     getName() { 
@@ -514,18 +552,19 @@ class PlayerC{
         return this.TOKEN;
     }
 
-    getMove(){      
-        return this.dataInput.callEnterDataByFunction(this.playerType);
+    getInputCombination(){      
+        return this.dataInput.getInputCombination(this.playerType);
     }
 }
 
 class TurnC{
-    constructor(players, gameLogic, board){
+    constructor(players, gameLogic, board, view){
         this.players = players;
-        this.playerIndex = 0;
-        this.currentPlayer = this.players[this.playerIndex];
         this.gameLogic = gameLogic;
         this.board = board;
+        this.playerIndex = 0;
+        this.currentPlayer = this.players[this.playerIndex];
+        this.view = view;
     }
 
     getCurrentPlayer() { 
@@ -538,19 +577,19 @@ class TurnC{
     }
 
     makeMove(){
-        let column = this.currentPlayer.getMove(this.board);
-
+        let column = this.currentPlayer.getInputCombination(this.board);
         this.board.update(column, this.currentPlayer.getToken());
-        this.gameLogic.gessCombination(this.board, this.getCurrentPlayer());
-        this.board.print();    
+
+        this.gameLogic.gessCombination(this.board);
+        this.view.printBoardState(this.board.getState());
     }
 
     isWinner(){
         return this.gameLogic.isWinner();
     }
 
-    gameEnd(){
-        return this.gameLogic.gameEnd(this.board);
+    isGameEnd(){
+        return this.gameLogic.isGameEnd(this.board);
     }
 }
 
@@ -563,61 +602,60 @@ class GameLogicC{
         return this.win;
     }
     
-    gameEnd(board){
+    isGameEnd(board){
         return this.win || board.isFull();
     }
 
-    gessCombination(board, player){
-        this.win = this.playerWin(board, player);
+    gessCombination(board){
+        this.win = this.isPlayerWinner(board);
     }
 
-    playerWin(board, player){
-        const romsLength = board.rowsLength();
-        const columnsLength = board.columnsLength();
-        console.log(romsLength + " --- " + columnsLength);
-        let cuantroEnRaya = false;
-        for(let row = 0; row < romsLength ; row++){
-            for(let column = 0; column < columnsLength; column++){
-                cuantroEnRaya = this.checkPosition(board, column, row, player.getToken());
-                if (cuantroEnRaya){
-                    return true;
-                }
-            }
+    isInRage(row, column){
+        // row 0...6
+        // column 0...7
+        const MIN_ROW = 0;
+        const MAX_ROW = 5;
+        const MIN_COLUMM = 0;
+        const MAX_COLUMN = 6;
+        if(row < MIN_ROW || row > MAX_ROW){
+            return false;
         }
-        return false;
+        
+        if(column < MIN_COLUMM || column > MAX_COLUMN){
+            return false;
+        }
+        return true;
     }
 
-    checkPosition(board, column, row, token) {
-        const CONNECTA_SIZE = 4;
-        if(CONNECTA_SIZE + column < 7){          
-            console.log("col pos: " + (CONNECTA_SIZE + column));           
-            if (board.gePosition(column, row) == token && 
-            board.gePosition(column + 1, row) == token && 
-            board.gePosition(column + 2, row) == token && 
-            board.gePosition(column + 3, row) == token){
-                return true;
+    checkDirection(board, direction){
+        for(let i = 0; i < 4; i++){
+            const row = board.getLastMoviment().getRow() + direction.row * i;
+            const column = board.getLastMoviment().getColumn() + direction.column * i;
+            
+            if(!this.isInRage(row, column)){
+                return false;
             }
-        }                 
-        if(CONNECTA_SIZE + row < 6){
-            console.log("row pos: " + (CONNECTA_SIZE + row));      
-            if(board.gePosition(column, row) == token && 
-            board.gePosition(column, row + 1) == token && 
-            board.gePosition(column, row + 2) == token && 
-            board.gePosition(column, row + 3) == token){
-                console.log("CUARTRO EN RAYA");
-                return true;
+
+            if(board.getLastMoviment().getToken() !== board.getPosition(column, row)){
+                return false;
             }
         }
-        if(CONNECTA_SIZE + column < 7 && CONNECTA_SIZE + row < 6){
-            console.log("col pos: " + (CONNECTA_SIZE + column) + " row pos: " + (CONNECTA_SIZE + row));     
-            if(board.gePosition(column, row) == token && 
-            board.gePosition(column + 1, row + 1) == token && 
-            board.gePosition(column + 2, row + 2) == token && 
-            board.gePosition(column + 3, row + 3) == token ||
-            board.gePosition(column, row + 3) == token && 
-            board.gePosition(column + 1, row + 2) == token && 
-            board.gePosition(column + 2, row + 1) == token && 
-            board.gePosition(column + 3, row) == token) {
+        return true;
+    }
+
+    isPlayerWinner(board){
+        const directions = [
+            { row: -1, column: 0 },   // Left
+            { row: 1, column: 0 },    // Right
+            { row: 0, column: 1 },    // Down
+            { row: 1, column: 1 },    // Right Down
+            { row: 1, column: -1 },   // Right Up
+            { row: -1, column: 1 },   // Left Down
+            { row: -1, column: -1 }   // Left Up
+        ];
+        
+        for(const direction of directions){
+            if(this.checkDirection(board, direction)){
                 return true;
             }
         }
@@ -634,52 +672,57 @@ class Connecta4{
         this.gameLogic;
     }
 
-    initialValues(){
+    initializeValues(){
         this.view = new ViewC();
         this.board = new BoardC(this.ROWNS, this.COLUMNS);
         this.gameLogic = new GameLogicC();
-        this.turn = new TurnC(this.createPlayersByMode(), this.gameLogic, this.board);
+        this.turn = new TurnC(this.createPlayersByMode(), this.gameLogic, this.board, this.view);
     }
 
     init(){
-        console.log(" INICIA EL JUEGO CONNECTA 4 ");
-        this.initialValues();
-        this.board.print();
+        this.initializeValues();
+        this.view.printStartGame();
+        this.view.printStartGame();
+        
         this.view.printBoardState(this.board.getState());
-
         do {
             this.turn.makeMove(this.board);
             if(!this.turn.isWinner()){
-                this.turn.next(this.gameLogic);
+                this.turn.next();
             }            
-        } while (!this.turn.gameEnd());        
+        } while (!this.turn.isGameEnd());    
         this.view.printMessageEndGame(this.turn.getCurrentPlayer().getName(), this.turn.isWinner());
     }
 
     createPlayersByMode(){
+        const view = this.view;
+        
         const PLAYER_TYPES = ["JUGADOR", "MAQUINA"];
         const TOKEN_STATES = ['RED', 'YELLOW']; 
-        let answer;
-        let isAnswerdValid;
-        do{
-            answer = this.view.promptPlayersModes();
-            isAnswerdValid = answer === 1 || answer === 2 || answer === 3;
-            if(!isAnswerdValid){
-                this.view.printError("ErrorInvalidOption");
-            }
-        }while(!isAnswerdValid)
+        let playersMode = getPlayersMode(view);
 
+        const GAME_MODES =  [[new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1", this.board, this.view),
+                            new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[1], "PLAYER 2", this.board, this.view)],
+                            
+                            [new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1", this.board, this.view),
+                            new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2", this.board, this.view)],
+                            
+                            [new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[0], "PLAYER 1", this.board, this.view),
+                            new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2", this.board, this.view)]];
+        return GAME_MODES[playersMode - 1];
 
-        //constructor(player, token, name){
-        const GAME_MODES =  [[new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1", this.board),
-                            new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[1], "PLAYER 2", this.board)],
-                            
-                            [new PlayerC(PLAYER_TYPES[0], TOKEN_STATES[0], "PLAYER 1", this.board),
-                            new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2", this.board)],
-                            
-                            [new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[0], "PLAYER 1", this.board),
-                            new PlayerC(PLAYER_TYPES[1], TOKEN_STATES[1], "PLAYER 2", this.board)]];
-        return GAME_MODES[answer - 1];
+        function getPlayersMode(view) {
+            let playersMode;
+            let isAnswerdValid;
+            do {
+                playersMode = view.promptPlayersModes();
+                isAnswerdValid = playersMode === 1 || playersMode === 2 || playersMode === 3;
+                if (!isAnswerdValid) {
+                    view.printError("ErrorInvalidOption");
+                }
+            } while (!isAnswerdValid);
+            return playersMode;
+        }
     }
 }
 
@@ -731,8 +774,7 @@ class Combination{
         this.colors = colors;
     }
     
-    //TODO: el nombre es incosistente, no matien la logica que menor confusion, modificar add por push
-    add(color){
+    push(color){
         this.colors.push(color);
     }
     
@@ -775,7 +817,7 @@ class DataInputM{
         this.view = view;
     }
 
-    callEnterDataByFunction(playerType){
+    getInputCombination(playerType){
         const self = this;
         const secretCodeManager = this.secretCodeManager;
 
@@ -796,7 +838,7 @@ class DataInputM{
             const validColors = secretCodeManager.getValidColors();
             for(let i = 0; i < N_COLORS; i++){
                 const validColorsRandomIndex = Math.floor(Math.random() * N_DIFERENT_COLORS);
-                colorsRandomTirada.add(validColors.getColor(validColorsRandomIndex));
+                colorsRandomTirada.push(validColors.getColor(validColorsRandomIndex));
             }
             return colorsRandomTirada;
         }                                  
@@ -805,12 +847,6 @@ class DataInputM{
                     "MAQUINA": getRandomTirada};
 
         return modes[playerType](self);
-    }
-
-    //TODO: la clase no proporciona ninguna funcionalidad a parte de llama a la clase que hace el trabajo
-    //TODO: unir las dos clases en una.
-    getInput(playerType){
-        return this.callEnterDataByFunction(playerType);
     }
 }
 
@@ -825,31 +861,26 @@ class PlayerM{
         return this.NAME;
     }
 
-    //TODO: posible incosistencia, la case devuelve un string? o una clase DataInputM?, la llamada a la función tiene que
-    //TODO: que ser con get, esperamos un valor o variable, o esperamos la creacion de una clase aunque al final es parecido. 
-    getMove(){
-        return this.dataInput.getInput(this.PLAYER_TYPE);
+    getPlayerInputCombination(){
+        return this.dataInput.getInputCombination(this.PLAYER_TYPE);
     }
 }
 
-
-//TODO: incosistencia en el nombre combinaciones propuestas, modificar a nombre en ingles.
 class GameLogicM{
     constructor(view){
         this.view = view;
         this.maxTurns = 15;
-        this.combinacionesPropuestas = [];
+        this.proposedCombinations = [];
         this.combinationColorStatus = [];    
         this.win = false; 
     }
 
-    //TODO: revisar el nombre por otro mas adecuado.
-    getLessMoviments(){
+    getRemainingTurns(){
         return this.maxTurns;
     }
 
     guessCode(secretCodeManager, inputCombination){
-        const colorMatchStatus = secretCodeManager.checkCombinacionColorStatus(inputCombination);
+        const colorMatchStatus = secretCodeManager.getSuporBlackWriteCombination(inputCombination);
         this.win = secretCodeManager.isWinningCombination(inputCombination);
         this.updateHistorial(colorMatchStatus, inputCombination);
     }
@@ -862,15 +893,12 @@ class GameLogicM{
         return this.win;
     }
 
-    //TODO: incosistencia en el nombre se espera un boleano pero el nombre de la función no lo indica.
-    gameEnd(){
+    isGameEnd(){
         return this.win || this.maxTurns <= 0;
     }
 
-    //TODO: no mantiene la coerencia en el nombre, pues se usa uno diferente al llama a la funcion y otro en la funcion.
-    //TODO: no mantiene la coerencia en el nombre de la función pues parte esta en castellano.
     updateHistorial(colorMatchStatus, inputCombination){
-        this.combinacionesPropuestas.push(inputCombination);
+        this.proposedCombinations.push(inputCombination);
         this.combinationColorStatus.push(colorMatchStatus);
 
         this.view.printCombination(inputCombination);
@@ -892,8 +920,8 @@ class TurnM{
     }
 
     makeMove(){
-        this.view.printMessageLessMoviments(this.gameLogic.getLessMoviments());  
-        const inputCombination = this.player.getMove();
+        this.view.printMessageLessMoviments(this.gameLogic.getRemainingTurns());  
+        const inputCombination = this.player.getPlayerInputCombination();
         this.gameLogic.guessCode(this.secretCodeManager, inputCombination);
 
     }
@@ -902,26 +930,31 @@ class TurnM{
         this.gameLogic.lessMoviment();
     }
 
-    //TODO: el nombre es inconsistente y no mantiene la estructura logica de todo el programa, pues usa is y no
-    //TODO: Y no devuelve nada
     isWinner(){
-        this.gameLogic.isWinner()
+        return this.gameLogic.isWinner()
     }
 
-    //TODO: modificar nobre gameEnd() por isGameEnd()
-    gameEnd(){
-        return this.gameLogic.gameEnd();
+    isGameEnd(){
+        return this.gameLogic.isGameEnd();
     }
 }
 
 class SecretCodeManager{
     constructor(view){
         this.view = view;
+        this.validColors;
+        this.winCombination;
+    }
+
+    init(){
         this.validColors = new Combination(["BLANCO", "NEGRO", "AMARILLO", "VERDE", "ROJO", "AZUL", "NARANJA"]);
-        this.winCombination = this.generateCombination();
+        this.winCombination = this.getRandomGeneratedCombination();
+        this.printCombination();
+    }
+
+    printCombination(){
         this.view.printCombination(this.winCombination);
     }
-    //TODO: incosistencia en el código, revisar la idoneidad de una funcion dentro del constructor.
 
     getValidColorsLength(){
         return this.validColors.getLength();
@@ -931,13 +964,12 @@ class SecretCodeManager{
         return this.validColors;
     }
 
-    //TODO: incosistencia en el código, la funcion devuelve una nueva funcion pero no queda claro con el nombre
-    generateCombination(){
+    getRandomGeneratedCombination(){
         let winCombination = new Combination();
         do{
             const index = Math.floor(Math.random() * this.validColors.getLength());
             if(!winCombination.contains(this.validColors.getColor(index))){
-                winCombination.add(this.validColors.getColor(index));
+                winCombination.push(this.validColors.getColor(index));
             }
         }while(winCombination.getLength() < 5)
         return winCombination;
@@ -967,17 +999,16 @@ class SecretCodeManager{
         return true;    
     }
 
-    //TODO: incosistenca en el nombre, la función implica un chequeo pero devuelve una nueva combinación 
-    checkCombinacionColorStatus(combination){
+    getSuporBlackWriteCombination(combination){
             let supportCombination = new Combination();
             for(let i = 0; i < combination.getLength(); i++){
                 const color = combination.getColor(i);
                 if(color === this.winCombination.getColor(i)){
-                    supportCombination.add("BLANCO");
+                    supportCombination.push("BLANCO");
                 }else if(this.winCombination.contains(color)){
-                    supportCombination.add("NEGRO");
+                    supportCombination.push("NEGRO");
                 }else{
-                    supportCombination.add("VACIO");
+                    supportCombination.push("VACIO");
                 }                
             }
             return supportCombination;        
@@ -987,20 +1018,26 @@ class SecretCodeManager{
 class Mastermaind{
     constructor(){
         this.view = new ViewM();
-        this.secretCodeManager = new SecretCodeManager(this.view); 
-        this.player = this.createPlayerByMode(this.view);
-        this.gameLogic = new GameLogicM(this.view);
-        this.turn = new TurnM(this.player, this.secretCodeManager, this.gameLogic, this.view);
+        this.secretCodeManager; 
+        this.player;
+        this.gameLogic; 
+        this.turn; 
     }
 
     init(){
-        console.log("HELLO WORLD SI ESTO ESTA DONDE NO DEBE ERROR");
+        this.secretCodeManager = new SecretCodeManager(this.view); 
+        this.secretCodeManager.init();
+
+        this.player = this.createPlayerByMode(this.view);
+        this.gameLogic = new GameLogicM(this.view);
+        this.turn = new TurnM(this.player, this.secretCodeManager, this.gameLogic, this.view);
+
         do{
             this.turn.makeMove();
             if(!this.turn.isWinner()){
                 this.turn.next();
             }            
-        }while(!this.turn.gameEnd())
+        }while(!this.turn.isGameEnd())
 
         this.view.printMessageEndGame(this.gameLogic.isWinner());       
     }
@@ -1070,8 +1107,7 @@ class App{
 
     start(){
         do{
-            this.game = this.selectGame();
-            console.log("fuera de this.game");
+            this.game = this.createGameBySelection();
             do{
                 this.game.init();
             }while(this.playAgain("keepPlayingSameGame"))    
@@ -1080,23 +1116,9 @@ class App{
         this.view.printMessageEndApp();
     }
 
-    selectGame(){
-        const NAME_GAMES = ["Mastermind", "Connect 4", "Tic Tac Toe"];
-
-        let selectedGame;
-        let isValid = false;
-        do{
-            selectedGame = this.view.promptSelectGame();
-            console.log("selected game0: " + selectedGame);
-            isValid = selectedGame === 1 || selectedGame === 2 || selectedGame === 3;
-            if(!isValid){
-                view.printError("ErrorChooseGame");
-            }
-            console.log("selected game1: " + selectedGame);
-        }while(!isValid);
-        console.log("selected game2: " + selectedGame);
-        this.view.printGameSeleted(NAME_GAMES[selectedGame]);
-        console.log("selected game3: " + selectedGame);
+    createGameBySelection(){
+        const view = this.view;
+        let selectedGame = selectGame();
         
         switch(selectedGame){
             case 1:
@@ -1107,6 +1129,22 @@ class App{
                 return new Tictactoe();
             default:
                 return null; 
+        }
+
+        function selectGame() {
+            const NAME_GAMES = ["Mastermind", "Connect 4", "Tic Tac Toe"];
+
+            let selectedGame;
+            let isValid = false;
+            do {
+                selectedGame = view.promptSelectGame();
+                isValid = selectedGame === 1 || selectedGame === 2 || selectedGame === 3;
+                if (!isValid) {
+                    view.printError("ErrorChooseGame");
+                }
+            } while (!isValid);
+            view.printGameSeleted(NAME_GAMES[selectedGame - 1]);
+            return selectedGame;
         }
     }
 
