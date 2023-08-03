@@ -1,5 +1,4 @@
 // ---------- TIC TAC TOE ----------
-
 class ViewT{
     promptRown(){
         return parseInt(prompt("Agrega una posicion valida del tablero ROW 1-2-3"));
@@ -342,7 +341,6 @@ class Tictactoe{
 
         return GAME_MODES[playersModes - 1];        
 
-
         function getPlayesModes(view) {
             let playersModes;
             let isValid;
@@ -407,6 +405,7 @@ class DataInputC{
     getInputCombination(playerType){
         const view = this.view;
         const board = this.board;
+        
         const getColumn = function(){
             let column;
             do{ 
